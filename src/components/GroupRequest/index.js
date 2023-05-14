@@ -73,7 +73,7 @@ const GroupRequest = () => {
       });
       setGrouplist(grpArr);
     });
-  }, [db, userlist]);
+  }, [open]);
 
   // Joined group member list
   useEffect(() => {
@@ -85,7 +85,7 @@ const GroupRequest = () => {
       });
       setGrpreq(reqArr);
     });
-  }, [db, userlist]);
+  }, [db, userlist, open]);
 
   // Group Join request
   const handlejoin = (item) => {

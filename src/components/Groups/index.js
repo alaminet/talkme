@@ -54,7 +54,7 @@ const Groups = () => {
           });
       });
     });
-  }, []);
+  }, [show, showmember]);
 
   // Group member reuest list
   useEffect(() => {
