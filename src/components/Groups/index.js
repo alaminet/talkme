@@ -160,6 +160,18 @@ const Groups = () => {
     setGroupMember(gmemberArr);
   };
 
+  // Member removed from group
+  const handleMemberRemove = (item) => {
+    remove(ref(db, "groupmembers/" + item.memberAcceptID)).then(() => {
+      toast.warn("Member Removed...!", {
+        position: "bottom-center",
+        autoClose: 1000,
+        pauseOnHover: false,
+        theme: "light",
+      });
+    });
+  };
+
   return (
     <>
       <ToastContainer />
@@ -215,8 +227,7 @@ const Groups = () => {
                           className="primary_btn block"
                           variant="contained"
                           size="small"
-                          // onClick={() => handleMemberReject(item)}
-                        >
+                          onClick={() => handleMemberRemove(item)}>
                           Remove
                         </Button>
                       </div>
