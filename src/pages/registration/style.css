@@ -1,0 +1,70 @@
+.registrationLeft h3 {
+  font-family: var(--font-optional);
+  font-weight: 700;
+  text-transform: capitalize;
+  line-height: 47px;
+  color: var(--color-primary);
+  font-size: 35px;
+}
+
+.registrationLeft h6 {
+  font-family: var(--font-optional);
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--color-optional-two);
+  font-size: 20px;
+}
+
+.registrationForm {
+  width: 80% !important;
+  margin-top: 20px;
+}
+
+.registrationForm input {
+  display: inline-block;
+}
+
+.registrationForm .css-1d1r5q-MuiFormHelperText-root {
+  color: var(--color-error);
+}
+
+.btn-sign-up {
+  margin-top: 20px;
+  width: 100%;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-sign-up:hover span > span {
+  background-color: black !important;
+}
+
+.sign_up_pic {
+  width: 100%;
+}
+
+.passShow {
+  position: relative;
+}
+
+.passShow .eyes {
+  position: absolute;
+  top: 45%;
+  cursor: pointer;
+  text-align: center;
+  right: 3%;
+}
+
+.registrationOption {
+  font-family: var(--font-secondary);
+  font-weight: 400;
+  font-size: 14px;
+  text-align: center;
+}
+
+.registrationOption a {
+  color: var(--color-secondary-one);
+  font-weight: 700;
+}

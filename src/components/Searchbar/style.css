@@ -1,0 +1,28 @@
+.search_bar {
+  padding: 15px;
+}
+
+.icon_input {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.search_icon svg,
+.search_option svg {
+  width: 30px;
+  height: 30px;
+}
+
+.search_input {
+  width: 95%;
+}
+
+.search_input input {
+  width: 100%;
+  outline: 0;
+  border: 0;
+  font-size: 20px;
+  padding: 5px;
+  margin-left: 5px;
+}

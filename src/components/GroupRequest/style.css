@@ -1,0 +1,18 @@
+.group_request {
+  padding: 15px;
+  max-height: 50vh;
+}
+
+.group_request .card_body {
+  height: 30vh;
+}
+
+.header_option {
+  cursor: pointer;
+}
+
+.group_admin {
+  font-size: 10px;
+  font-weight: 400;
+  font-family: var(--font-secondary);
+}

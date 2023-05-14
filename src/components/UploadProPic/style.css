@@ -1,0 +1,82 @@
+.pre_upload {
+  width: 500px;
+  height: 650px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.upload_content {
+  text-align: center;
+}
+
+.upload_content svg {
+  width: 100px;
+  height: 100px;
+}
+
+.upload_content h4 {
+  margin-top: 10px;
+  font-size: 28px;
+  font-family: var(--font-primary);
+}
+
+.crope_img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-white);
+}
+
+.crop_head {
+  display: flex;
+  justify-content: space-between;
+}
+
+.crop_head h4 {
+  width: 90%;
+  text-align: center;
+  font-family: var(--font-primary);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.crop_close {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+.crop_preview {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 10px auto;
+}
+
+.img-preview {
+  overflow: hidden;
+  width: 150px;
+  height: 150px;
+}
+
+.crop_image {
+  width: 100%;
+  object-fit: contain;
+  overflow: hidden;
+}
+
+.img_upload {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}

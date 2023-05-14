@@ -1,0 +1,158 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+span {
+  line-height: 0.8;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+:root {
+  --font-primary: "Poppins", sans-serif;
+  --font-secondary: "Open Sans", sans-serif;
+  --font-optional: "Nunito", sans-serif;
+  --color-primary: #0a2647;
+  --color-secondary-one: #1976d2;
+  --color-secondary-two: #ff6e31;
+  --color-optional-one: #ffebb7;
+  --color-optional-two: #ad8e70;
+  --color-error: #cd0404;
+  --color-white: #fff;
+  --color-black: #000;
+  --color-black-50: #b1b1b1;
+}
+
+.btn-round {
+  border-radius: 100px;
+  padding: 20px 50px;
+  background-color: var(--color-secondary-one);
+  color: var(--color-white);
+  border: 2px solid transparent;
+  cursor: pointer;
+  font-family: var(--font-optional);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 28px;
+  transition: all 0.3s linear;
+}
+
+.btn-round:hover {
+  border-color: var(--color-secondary-one);
+  color: var(--color-secondary-one);
+  background-color: var(--color-white);
+}
+
+/* Home option header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header_title h3 {
+  font-family: var(--font-primary);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 30px;
+}
+
+.header_option svg {
+  width: 30px;
+  height: 30px;
+}
+
+/* Profile list */
+
+.card_body {
+  margin-top: 20px;
+  overflow-y: auto;
+}
+
+.body_list {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  border-bottom: 1px solid var(--color-black-50);
+}
+
+.body_list:last-child {
+  border-style: none !important;
+}
+
+.body_list .user_info {
+  width: 60%;
+}
+
+.body_list .btn_group {
+  padding-right: 10px;
+}
+
+.user_pic_70 {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: var(--color-optional-one);
+  overflow: hidden;
+}
+
+.user_pic_70 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user_info .name {
+  font-family: var(--font-primary);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 27px;
+  color: var(--color-black);
+}
+
+.user_info .sub_name {
+  font-family: var(--font-primary);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--color-black-50);
+}
+
+.body_list .btn_group button {
+  width: 100%;
+}
+
+.primary_btn {
+  background-color: var(--color-primary) !important;
+  transition: all 0.3s linear;
+}
+
+.primary_btn:hover {
+  color: var(--font-primary) !important;
+  background-color: transparent !important;
+  border-color: var(--color-primary) !important;
+}
+
+/* CSS for Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  background-color: var(--color-black-50);
+  border-radius: 3px;
+}

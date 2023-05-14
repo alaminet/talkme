@@ -1,0 +1,25 @@
+.groups {
+  padding: 15px;
+}
+
+.groups .card_body {
+  height: 26vh;
+  overflow-y: scroll;
+}
+
+.btn_group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.groups .primary_btn.block {
+  background-color: transparent !important;
+  border: 1px solid var(--color-error) !important;
+  color: var(--color-error) !important;
+}
+
+.search_option {
+  display: none;
+}

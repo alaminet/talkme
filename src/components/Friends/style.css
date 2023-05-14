@@ -1,0 +1,25 @@
+.friends {
+  padding: 15px;
+}
+
+.friends .card_body {
+  height: 36vh;
+  overflow-y: scroll;
+}
+
+.btn_group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.friends .primary_btn.block {
+  background-color: transparent !important;
+  border: 1px solid var(--color-error) !important;
+  color: var(--color-error) !important;
+}
+
+.search_option {
+  display: none;
+}

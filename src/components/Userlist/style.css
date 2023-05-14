@@ -1,0 +1,29 @@
+.user_list {
+  padding: 15px;
+}
+
+.user_list .card_body {
+  height: 36vh;
+  overflow-y: scroll;
+}
+
+.user_list .body_list .user_info {
+  width: 55%;
+}
+
+.btn_group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn_group svg {
+  width: 30px;
+  height: 30px;
+}
+
+.search_option {
+  display: none;
+}

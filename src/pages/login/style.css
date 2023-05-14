@@ -1,0 +1,38 @@
+.loginRight {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.loginArea {
+  width: 70%;
+}
+
+.loginArea h1 {
+  text-align: center;
+  font-family: var(--font-secondary);
+  font-weight: 700;
+  font-size: 35px;
+  line-height: 45px;
+  color: var(--color-primary);
+  margin-bottom: 20px;
+}
+
+.loginHead {
+  display: flex;
+  justify-content: center;
+}
+
+.loginHead img {
+  width: 100px;
+  height: auto;
+}
+
+.loginFrom .css-1wc848c-MuiFormHelperText-root {
+  color: var(--color-error);
+}
+
+.authLogin {
+  display: flex;
+  justify-content: space-between;
+}

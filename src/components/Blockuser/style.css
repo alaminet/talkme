@@ -1,0 +1,23 @@
+.blockuser {
+  padding: 15px;
+}
+
+.blockuser .card_body {
+  height: 29vh;
+  overflow-y: scroll;
+}
+
+.btn_group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn_group button.Mui-disabled {
+  background-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+.search_option {
+  display: none;
+}
