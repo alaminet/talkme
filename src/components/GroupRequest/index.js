@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "./style.css";
+import { ToastContainer, toast } from "react-toastify";
 import { HiOutlineViewGridAdd } from "react-icons/hi";
 import Button from "@mui/material/Button";
 import Searchbar from "../Searchbar";
 import Groupmodal from "../Modals/Groupmodal";
-import { getDatabase, onValue, ref } from "firebase/database";
+import {
+  getDatabase,
+  onValue,
+  push,
+  ref,
+  remove,
+  set,
+} from "firebase/database";
 import { useSelector } from "react-redux";
 import {
   getStorage,
@@ -17,6 +25,7 @@ const GroupRequest = () => {
   const storage = getStorage();
   const [grouplist, setGrouplist] = useState([]);
   const [userlist, setUserlist] = useState([]);
+  const [grpreq, setGrpreq] = useState([]);
   const users = useSelector((user) => user.loginSlice.login);
   const defaultProfile = "./images/avatar_boy_cap.png";
 
@@ -51,18 +60,63 @@ const GroupRequest = () => {
       let grpArr = [];
       snap.forEach((item) => {
         let user = userlist.find((g) => g?.userID === item.val().groupAdmin);
+        let memberreq = grpreq.find(
+          (r) => r?.requester === users.uid && r?.grpID === item.key
+        );
         grpArr.push({
           ...item.val(),
           grpID: item.key,
           adminName: user?.username,
+          requester: memberreq?.requester,
+          reqID: memberreq?.reqID,
         });
       });
       setGrouplist(grpArr);
     });
-  }, [userlist]);
+  }, [db, userlist]);
+
+  // Joined group member list
+  useEffect(() => {
+    onValue(ref(db, "grouprequest/"), (snap) => {
+      let reqArr = [];
+      snap.forEach((item) => {
+        let user = userlist.find((g) => g?.userID === item.val().requester);
+        reqArr.push({ ...item.val(), reqID: item.key });
+      });
+      setGrpreq(reqArr);
+    });
+  }, [db, userlist]);
+
+  // Group Join request
+  const handlejoin = (item) => {
+    set(push(ref(db, "grouprequest")), {
+      grpID: item.grpID,
+      requester: users.uid,
+    }).then(() => {
+      toast.success("Member Request sent...!", {
+        position: "bottom-center",
+        autoClose: 1000,
+        pauseOnHover: false,
+        theme: "light",
+      });
+    });
+  };
+
+  //Group request cancel
+  const handlecancel = (item) => {
+    remove(ref(db, "grouprequest/" + item.reqID)).then(() => {
+      toast.warn("Request Canceled...!", {
+        position: "bottom-center",
+        autoClose: 1000,
+        pauseOnHover: false,
+        theme: "light",
+      });
+    });
+  };
 
   return (
     <>
+      <ToastContainer />
       <div className="group_request">
         <div className="header">
           <div className="header_title">
@@ -94,19 +148,31 @@ const GroupRequest = () => {
                 <div className="sub_name">{item.groupTag}</div>
               </div>
               <div className="btn_group">
-                {item.groupAdmin === users.uid ? (
-                  <Button
-                    disabled
-                    className="primary_btn"
-                    variant="contained"
-                    size="small">
-                    Join
-                  </Button>
+                {item.groupAdmin === users.uid ||
+                item?.requester === users.uid ? (
+                  item?.requester === users.uid ? (
+                    <Button
+                      className="primary_btn cancel"
+                      variant="contained"
+                      size="small"
+                      onClick={() => handlecancel(item)}>
+                      Cancel Req
+                    </Button>
+                  ) : (
+                    <Button
+                      disabled
+                      className="primary_btn"
+                      variant="contained"
+                      size="small">
+                      Join
+                    </Button>
+                  )
                 ) : (
                   <Button
                     className="primary_btn"
                     variant="contained"
-                    size="small">
+                    size="small"
+                    onClick={() => handlejoin(item)}>
                     Join
                   </Button>
                 )}
