@@ -18,6 +18,8 @@ const Groups = () => {
   const storage = getStorage();
   const [userlist, setUserlist] = useState([]);
   const [grouplist, setGrouplist] = useState([]);
+  const [memberreq, setMemberreq] = useState([]);
+  const [memberreqlist, setMemberreqlist] = useState([]);
   const [show, setShow] = useState(false);
   const users = useSelector((user) => user.loginSlice.login);
   const defaultProfile = "./images/avatar_boy_cap.png";
@@ -42,10 +44,30 @@ const Groups = () => {
     });
   }, []);
 
+  // Group member reuest list
+  useEffect(() => {
+    onValue(ref(db, "grouprequest"), (snap) => {
+      let memberReqArr = [];
+      snap.forEach((item) => {
+        memberReqArr.push({ ...item.val(), reqID: item.key });
+      });
+      setMemberreq(memberReqArr);
+    });
+  }, []);
+
   // Group Request list
   const handlerequest = (item) => {
     setShow(true);
-    console.log(item);
+    let memberArr = [];
+    let members = memberreq.find((m) => m?.grpID === item.grpID);
+    let memberlist = userlist.find((u) => u?.userID === members?.requester);
+    memberArr.push({
+      ...item,
+      userID: memberlist?.userID,
+      username: memberlist?.username,
+      userPic: memberlist?.userPic,
+    });
+    setMemberreqlist(memberArr);
   };
 
   // Get Group list from database
@@ -94,30 +116,35 @@ const Groups = () => {
                 </div>
               </div>
               <div className="req-body">
-                <div className="body_list">
-                  <div className="user_pic_70">
-                    <picture>
-                      <img src="./images/avatar_boy_cap.png" alt="user pic" />
-                    </picture>
+                {memberreqlist.map((item, i) => (
+                  <div key={i} className="body_list">
+                    <div className="user_pic_70">
+                      <picture>
+                        <img
+                          src={item?.userPic ?? defaultProfile}
+                          alt={item?.username}
+                        />
+                      </picture>
+                    </div>
+                    <div className="user_info">
+                      <div className="name">{item.username}</div>
+                    </div>
+                    <div className="btn_group">
+                      <Button
+                        className="primary_btn unfriend"
+                        variant="contained"
+                        size="small">
+                        Accept
+                      </Button>
+                      <Button
+                        className="primary_btn block"
+                        variant="contained"
+                        size="small">
+                        Reject
+                      </Button>
+                    </div>
                   </div>
-                  <div className="user_info">
-                    <div className="name">Name</div>
-                  </div>
-                  <div className="btn_group">
-                    <Button
-                      className="primary_btn unfriend"
-                      variant="contained"
-                      size="small">
-                      Accept
-                    </Button>
-                    <Button
-                      className="primary_btn block"
-                      variant="contained"
-                      size="small">
-                      Reject
-                    </Button>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           ) : (
