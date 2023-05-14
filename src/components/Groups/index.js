@@ -28,8 +28,11 @@ const Groups = () => {
   const [userlist, setUserlist] = useState([]);
   const [grouplist, setGrouplist] = useState([]);
   const [memberreq, setMemberreq] = useState([]);
+  const [memberlist, setMemberlist] = useState([]);
   const [memberreqlist, setMemberreqlist] = useState([]);
+  const [groupMember, setGroupMember] = useState([]);
   const [show, setShow] = useState(false);
+  const [showmember, setShowmember] = useState(false);
   const users = useSelector((user) => user.loginSlice.login);
   const defaultProfile = "./images/avatar_boy_cap.png";
 
@@ -62,7 +65,7 @@ const Groups = () => {
       });
       setMemberreq(memberReqArr);
     });
-  }, []);
+  }, [show, showmember]);
 
   // Group Request list
   const handlerequest = (item) => {
@@ -80,7 +83,6 @@ const Groups = () => {
       });
     setMemberreqlist(memberArr);
   };
-  console.log(memberreqlist);
 
   // Get Group list from database
   useEffect(() => {
@@ -99,7 +101,7 @@ const Groups = () => {
       });
       setGrouplist(grpArr);
     });
-  }, [userlist]);
+  }, [show, showmember]);
 
   // Group Member accept by admin
   const handleMemberAccept = (item) => {
@@ -130,6 +132,34 @@ const Groups = () => {
     });
   };
 
+  // Group Member List from Firebase
+  useEffect(() => {
+    onValue(ref(db, "groupmembers"), (snap) => {
+      let memberArr = [];
+      snap.forEach((item) => {
+        memberArr.push({ ...item.val(), memberAcceptID: item.key });
+      });
+      setMemberlist(memberArr);
+    });
+  }, [show, showmember]);
+
+  // Group Member list
+  const handleMembers = (item) => {
+    setShowmember(true);
+    let gmemberArr = [];
+    let gMember = memberlist.find((m) => m?.grpID === item.grpID);
+    let gmemberlist = userlist.find((u) => u?.userID === gMember?.memberID);
+    gmemberlist &&
+      gmemberArr.push({
+        ...item,
+        memberAcceptID: gMember?.memberAcceptID,
+        userID: gmemberlist?.userID,
+        username: gmemberlist?.username,
+        userPic: gmemberlist?.userPic,
+      });
+    setGroupMember(gmemberArr);
+  };
+
   return (
     <>
       <ToastContainer />
@@ -146,9 +176,60 @@ const Groups = () => {
           </div>
         </div>
         <div className="card_body">
-          {show ? (
+          {showmember ? (
+            <div className="member-list">
+              <div className="head">
+                <div></div>
+                <div>
+                  <h4>Member List</h4>
+                </div>
+                <div className="close-btn">
+                  <HiBackspace onClick={() => setShowmember(false)} />
+                </div>
+              </div>
+              <div className="body">
+                {groupMember.length ? (
+                  groupMember.map((item, i) => (
+                    <div key={i} className="body_list">
+                      <div className="user_pic_70">
+                        <picture>
+                          <img
+                            src={item?.userPic ?? defaultProfile}
+                            alt={item?.username}
+                          />
+                        </picture>
+                      </div>
+                      <div className="user_info">
+                        <div className="name">{item.username}</div>
+                      </div>
+                      <div className="btn_group">
+                        <Button
+                          className="primary_btn unfriend"
+                          variant="contained"
+                          size="small"
+                          // onClick={() => handleMemberAccept(item)}
+                        >
+                          Push
+                        </Button>
+                        <Button
+                          className="primary_btn block"
+                          variant="contained"
+                          size="small"
+                          // onClick={() => handleMemberReject(item)}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <Alert severity="warning">No Member Found..!</Alert>
+                )}
+              </div>
+            </div>
+          ) : show ? (
             <div className="member-req">
-              <div className="req-head">
+              <div className="head">
                 <div></div>
                 <div className="req-title">
                   <h4>Member Request</h4>
@@ -157,7 +238,7 @@ const Groups = () => {
                   <HiBackspace onClick={() => setShow(false)} />
                 </div>
               </div>
-              <div className="req-body">
+              <div className="body">
                 {memberreqlist.length ? (
                   memberreqlist.map((item, i) => (
                     <div key={i} className="body_list">
@@ -220,7 +301,8 @@ const Groups = () => {
                   <Button
                     className="primary_btn block"
                     variant="contained"
-                    size="small">
+                    size="small"
+                    onClick={() => handleMembers(item)}>
                     Member
                   </Button>
                 </div>
