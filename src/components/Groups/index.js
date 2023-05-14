@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "./style.css";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { ToastContainer, toast } from "react-toastify";
 import { HiBackspace } from "react-icons/hi2";
 import Button from "@mui/material/Button";
 import Searchbar from "../Searchbar";
-import { getDatabase, onValue, ref } from "firebase/database";
+import {
+  getDatabase,
+  onValue,
+  push,
+  ref,
+  remove,
+  set,
+} from "firebase/database";
 import { useSelector } from "react-redux";
 import {
   getStorage,
@@ -63,6 +71,7 @@ const Groups = () => {
     let memberlist = userlist.find((u) => u?.userID === members?.requester);
     memberArr.push({
       ...item,
+      reqID: members?.reqID,
       userID: memberlist?.userID,
       username: memberlist?.username,
       userPic: memberlist?.userPic,
@@ -89,8 +98,26 @@ const Groups = () => {
     });
   }, [userlist]);
 
+  // Group Member accept by admin
+  const handleMemberAccept = (item) => {
+    set(push(ref(db, "groupmembers")), {
+      grpID: item.grpID,
+      memberID: item.userID,
+    }).then(() => {
+      remove(ref(db, "grouprequest/" + item.reqID)).then(() => {
+        toast.success("Member Added...!", {
+          position: "bottom-center",
+          autoClose: 1000,
+          pauseOnHover: false,
+          theme: "light",
+        });
+      });
+    });
+  };
+
   return (
     <>
+      <ToastContainer />
       <div className="groups">
         <div className="header">
           <div className="header_title">
@@ -133,7 +160,8 @@ const Groups = () => {
                       <Button
                         className="primary_btn unfriend"
                         variant="contained"
-                        size="small">
+                        size="small"
+                        onClick={() => handleMemberAccept(item)}>
                         Accept
                       </Button>
                       <Button
