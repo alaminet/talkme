@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./style.css";
-import { HiOutlineViewGridAdd } from "react-icons/hi";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { HiBackspace } from "react-icons/hi2";
 import Button from "@mui/material/Button";
 import Searchbar from "../Searchbar";
 import { getDatabase, onValue, ref } from "firebase/database";
@@ -10,12 +11,14 @@ import {
   ref as storageRef,
   getDownloadURL,
 } from "firebase/storage";
+import { Badge } from "@mui/material";
 
 const Groups = () => {
   const db = getDatabase();
   const storage = getStorage();
   const [userlist, setUserlist] = useState([]);
   const [grouplist, setGrouplist] = useState([]);
+  const [show, setShow] = useState(false);
   const users = useSelector((user) => user.loginSlice.login);
   const defaultProfile = "./images/avatar_boy_cap.png";
 
@@ -39,6 +42,12 @@ const Groups = () => {
     });
   }, []);
 
+  // Group Request list
+  const handlerequest = (item) => {
+    setShow(true);
+    console.log(item);
+  };
+
   // Get Group list from database
   useEffect(() => {
     const groupCountRef = ref(db, "groups/");
@@ -58,8 +67,6 @@ const Groups = () => {
     });
   }, [userlist]);
 
-  console.log(grouplist);
-
   return (
     <>
       <div className="groups">
@@ -67,41 +74,84 @@ const Groups = () => {
           <div className="header_title">
             <h3>My Groups</h3>
           </div>
-          <div>
+          {/* <div>
             <Searchbar />
-          </div>
+          </div> */}
           <div className="header_option">
-            <HiOutlineViewGridAdd />
+            <BsThreeDotsVertical />
           </div>
         </div>
         <div className="card_body">
-          {grouplist.map((item, i) => (
-            <div className="body_list">
-              <div className="user_pic_70">
-                <picture>
-                  <img src="./images/avatar_boy_cap.png" alt="user pic" />
-                </picture>
+          {show ? (
+            <div className="member-req">
+              <div className="req-head">
+                <div></div>
+                <div className="req-title">
+                  <h4>Member Request</h4>
+                </div>
+                <div className="close-btn">
+                  <HiBackspace onClick={() => setShow(false)} />
+                </div>
               </div>
-              <div className="user_info">
-                <div className="name">{item.groupName}</div>
-                <div className="sub_name">{item.groupTag}</div>
-              </div>
-              <div className="btn_group">
-                <Button
-                  className="primary_btn block"
-                  variant="contained"
-                  size="small">
-                  Member
-                </Button>
-                <Button
-                  className="primary_btn unfriend"
-                  variant="contained"
-                  size="small">
-                  Request
-                </Button>
+              <div className="req-body">
+                <div className="body_list">
+                  <div className="user_pic_70">
+                    <picture>
+                      <img src="./images/avatar_boy_cap.png" alt="user pic" />
+                    </picture>
+                  </div>
+                  <div className="user_info">
+                    <div className="name">Name</div>
+                  </div>
+                  <div className="btn_group">
+                    <Button
+                      className="primary_btn unfriend"
+                      variant="contained"
+                      size="small">
+                      Accept
+                    </Button>
+                    <Button
+                      className="primary_btn block"
+                      variant="contained"
+                      size="small">
+                      Reject
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
-          ))}
+          ) : (
+            grouplist.map((item, i) => (
+              <div className="body_list">
+                <div className="user_pic_70">
+                  <picture>
+                    <img src="./images/avatar_boy_cap.png" alt="user pic" />
+                  </picture>
+                </div>
+                <div className="user_info">
+                  <div className="name">{item.groupName}</div>
+                  <div className="sub_name">{item.groupTag}</div>
+                </div>
+                <div className="btn_group">
+                  <Button
+                    className="primary_btn block"
+                    variant="contained"
+                    size="small">
+                    Member
+                  </Button>
+                  <Badge badgeContent={10} max={9}>
+                    <Button
+                      className="primary_btn unfriend"
+                      variant="contained"
+                      size="small"
+                      onClick={() => handlerequest(item)}>
+                      Request
+                    </Button>
+                  </Badge>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </>

@@ -7,6 +7,15 @@
   overflow-y: scroll;
 }
 
+.body_list .btn_group {
+  padding-right: 25px;
+}
+
+.MuiBadge-badge {
+  background-color: var(--color-secondary-two);
+  color: var(--color-white);
+}
+
 .btn_group {
   display: flex;
   flex-direction: column;
@@ -22,4 +31,22 @@
 
 .search_option {
   display: none;
+}
+
+.close-btn {
+  text-align: right;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.req-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-btn svg {
+  width: 30px;
+  height: 30px;
+  fill: var(--color-primary);
 }
