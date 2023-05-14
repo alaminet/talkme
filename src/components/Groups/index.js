@@ -3,6 +3,7 @@ import "./style.css";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { ToastContainer, toast } from "react-toastify";
 import { HiBackspace } from "react-icons/hi2";
+import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Searchbar from "../Searchbar";
 import {
@@ -57,7 +58,7 @@ const Groups = () => {
     onValue(ref(db, "grouprequest"), (snap) => {
       let memberReqArr = [];
       snap.forEach((item) => {
-        memberReqArr.push({ ...item.val(), reqID: item.key });
+        memberReqArr.push({ ...item.val(), mreqID: item.key });
       });
       setMemberreq(memberReqArr);
     });
@@ -69,15 +70,17 @@ const Groups = () => {
     let memberArr = [];
     let members = memberreq.find((m) => m?.grpID === item.grpID);
     let memberlist = userlist.find((u) => u?.userID === members?.requester);
-    memberArr.push({
-      ...item,
-      reqID: members?.reqID,
-      userID: memberlist?.userID,
-      username: memberlist?.username,
-      userPic: memberlist?.userPic,
-    });
+    memberlist &&
+      memberArr.push({
+        ...item,
+        mreqID: members?.mreqID,
+        userID: memberlist?.userID,
+        username: memberlist?.username,
+        userPic: memberlist?.userPic,
+      });
     setMemberreqlist(memberArr);
   };
+  console.log(memberreqlist);
 
   // Get Group list from database
   useEffect(() => {
@@ -104,13 +107,25 @@ const Groups = () => {
       grpID: item.grpID,
       memberID: item.userID,
     }).then(() => {
-      remove(ref(db, "grouprequest/" + item.reqID)).then(() => {
+      remove(ref(db, "grouprequest/" + item.mreqID)).then(() => {
         toast.success("Member Added...!", {
           position: "bottom-center",
           autoClose: 1000,
           pauseOnHover: false,
           theme: "light",
         });
+      });
+    });
+  };
+
+  // Group Member request rejection
+  const handleMemberReject = (item) => {
+    remove(ref(db, "grouprequest/" + item.mreqID)).then(() => {
+      toast.warn("Request Cancel...!", {
+        position: "bottom-center",
+        autoClose: 1000,
+        pauseOnHover: false,
+        theme: "light",
       });
     });
   };
@@ -143,41 +158,46 @@ const Groups = () => {
                 </div>
               </div>
               <div className="req-body">
-                {memberreqlist.map((item, i) => (
-                  <div key={i} className="body_list">
-                    <div className="user_pic_70">
-                      <picture>
-                        <img
-                          src={item?.userPic ?? defaultProfile}
-                          alt={item?.username}
-                        />
-                      </picture>
+                {memberreqlist.length ? (
+                  memberreqlist.map((item, i) => (
+                    <div key={i} className="body_list">
+                      <div className="user_pic_70">
+                        <picture>
+                          <img
+                            src={item?.userPic ?? defaultProfile}
+                            alt={item?.username}
+                          />
+                        </picture>
+                      </div>
+                      <div className="user_info">
+                        <div className="name">{item.username}</div>
+                      </div>
+                      <div className="btn_group">
+                        <Button
+                          className="primary_btn unfriend"
+                          variant="contained"
+                          size="small"
+                          onClick={() => handleMemberAccept(item)}>
+                          Accept
+                        </Button>
+                        <Button
+                          className="primary_btn block"
+                          variant="contained"
+                          size="small"
+                          onClick={() => handleMemberReject(item)}>
+                          Reject
+                        </Button>
+                      </div>
                     </div>
-                    <div className="user_info">
-                      <div className="name">{item.username}</div>
-                    </div>
-                    <div className="btn_group">
-                      <Button
-                        className="primary_btn unfriend"
-                        variant="contained"
-                        size="small"
-                        onClick={() => handleMemberAccept(item)}>
-                        Accept
-                      </Button>
-                      <Button
-                        className="primary_btn block"
-                        variant="contained"
-                        size="small">
-                        Reject
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <Alert severity="warning">No Member Request..!</Alert>
+                )}
               </div>
             </div>
           ) : (
             grouplist.map((item, i) => (
-              <div className="body_list">
+              <div key={i} className="body_list">
                 <div className="user_pic_70">
                   <picture>
                     <img src="./images/avatar_boy_cap.png" alt="user pic" />
@@ -188,13 +208,7 @@ const Groups = () => {
                   <div className="sub_name">{item.groupTag}</div>
                 </div>
                 <div className="btn_group">
-                  <Button
-                    className="primary_btn block"
-                    variant="contained"
-                    size="small">
-                    Member
-                  </Button>
-                  <Badge badgeContent={10} max={9}>
+                  <Badge badgeContent={memberreqlist.length} max={9}>
                     <Button
                       className="primary_btn unfriend"
                       variant="contained"
@@ -203,6 +217,12 @@ const Groups = () => {
                       Request
                     </Button>
                   </Badge>
+                  <Button
+                    className="primary_btn block"
+                    variant="contained"
+                    size="small">
+                    Member
+                  </Button>
                 </div>
               </div>
             ))
