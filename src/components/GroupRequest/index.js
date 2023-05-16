@@ -73,7 +73,7 @@ const GroupRequest = () => {
       });
       setGrouplist(grpArr);
     });
-  }, [open]);
+  }, []);
 
   // Joined group member list
   useEffect(() => {

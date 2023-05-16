@@ -54,9 +54,9 @@ const Groups = () => {
           });
       });
     });
-  }, [show, showmember]);
+  }, []);
 
-  // Group member reuest list
+  // Group member request list
   useEffect(() => {
     onValue(ref(db, "grouprequest"), (snap) => {
       let memberReqArr = [];
@@ -65,24 +65,7 @@ const Groups = () => {
       });
       setMemberreq(memberReqArr);
     });
-  }, [show, showmember]);
-
-  // Group Request list
-  const handlerequest = (item) => {
-    setShow(true);
-    let memberArr = [];
-    let members = memberreq.find((m) => m?.grpID === item.grpID);
-    let memberlist = userlist.find((u) => u?.userID === members?.requester);
-    memberlist &&
-      memberArr.push({
-        ...item,
-        mreqID: members?.mreqID,
-        userID: memberlist?.userID,
-        username: memberlist?.username,
-        userPic: memberlist?.userPic,
-      });
-    setMemberreqlist(memberArr);
-  };
+  }, [show, memberreqlist]);
 
   // Get Group list from database
   useEffect(() => {
@@ -101,7 +84,30 @@ const Groups = () => {
       });
       setGrouplist(grpArr);
     });
-  }, [show, showmember]);
+  }, []);
+
+  // Group Request list
+  const handlerequest = (item) => {
+    setShow(true);
+    let memberArr = [];
+    let reqArr = [];
+    memberreq.find((m) => {
+      if (m?.grpID === item.grpID) {
+        reqArr.push({ ...m });
+      }
+    });
+    userlist.find((u) => {
+      reqArr.find((arr) => {
+        if (arr?.requester === u.userID) {
+          memberArr.push({
+            ...u,
+            mreqID: arr?.mreqID,
+          });
+        }
+      });
+    });
+    setMemberreqlist(memberArr);
+  };
 
   // Group Member accept by admin
   const handleMemberAccept = (item) => {
@@ -141,7 +147,7 @@ const Groups = () => {
       });
       setMemberlist(memberArr);
     });
-  }, [show, showmember]);
+  }, []);
 
   // Group Member list
   const handleMembers = (item) => {
