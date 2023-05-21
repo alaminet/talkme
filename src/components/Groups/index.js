@@ -85,7 +85,7 @@ const Groups = () => {
       setGrouplist(grpArr);
     });
   }, []);
-
+  console.log(userlist);
   // Group Request list
   const handlerequest = (item) => {
     setShow(true);
