@@ -33,26 +33,6 @@ const GroupRequest = () => {
   const [open, setOpen] = useState(false);
   const handleNew = () => setOpen(true);
 
-  // user list from firebase
-  useEffect(() => {
-    const userCountRef = ref(db, "users/");
-    onValue(userCountRef, (snap) => {
-      let userArr = [];
-      snap.forEach((item) => {
-        getDownloadURL(storageRef(storage, "userpic/" + item.key))
-          .then((url) => {
-            userArr.push({ ...item.val(), userID: item.key, userPic: url });
-          })
-          .catch((error) => {
-            userArr.push({ ...item.val(), userID: item.key, userPic: null });
-          })
-          .then(() => {
-            setUserlist([...userArr]);
-          });
-      });
-    });
-  }, []);
-
   // Get Group list from database
   useEffect(() => {
     const groupCountRef = ref(db, "groups/");
@@ -73,7 +53,27 @@ const GroupRequest = () => {
       });
       setGrouplist(grpArr);
     });
-  }, []);
+  }, [db, users]);
+
+  // user list from firebase
+  useEffect(() => {
+    const userCountRef = ref(db, "users/");
+    onValue(userCountRef, (snap) => {
+      let userArr = [];
+      snap.forEach((item) => {
+        getDownloadURL(storageRef(storage, "userpic/" + item.key))
+          .then((url) => {
+            userArr.push({ ...item.val(), userID: item.key, userPic: url });
+          })
+          .catch((error) => {
+            userArr.push({ ...item.val(), userID: item.key, userPic: null });
+          })
+          .then(() => {
+            setUserlist([...userArr]);
+          });
+      });
+    });
+  }, [db, grouplist, grpreq]);
 
   // Joined group member list
   useEffect(() => {
