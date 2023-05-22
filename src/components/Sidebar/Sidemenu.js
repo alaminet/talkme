@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
 import { BsFillChatDotsFill } from "react-icons/bs";
 import { RiNotification3Fill } from "react-icons/ri";
@@ -10,18 +10,18 @@ const Sidemenu = () => {
   return (
     <>
       <div className="menuitem_wrapper">
-        <Link to="/">
+        <NavLink to="/">
           <FaHome />
-        </Link>
-        <Link to="/message">
+        </NavLink>
+        <NavLink to="/messages">
           <BsFillChatDotsFill />
-        </Link>
-        <Link to="/notification">
+        </NavLink>
+        <NavLink to="/notification">
           <RiNotification3Fill />
-        </Link>
-        <Link to="/setting">
+        </NavLink>
+        <NavLink to="/setting">
           <AiFillSetting />
-        </Link>
+        </NavLink>
       </div>
     </>
   );

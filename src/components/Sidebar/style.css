@@ -97,7 +97,7 @@
   transition: all 0.3s linear;
 }
 .menu_items a:hover::after,
-.menu_items a:active::after {
+.menu_items a.active::after {
   left: 0;
 }
 
@@ -109,7 +109,7 @@
 }
 
 .menu_items a:hover svg,
-.menu_items a:active svg {
+.menu_items a.active svg {
   fill: var(--color-primary);
 }
 

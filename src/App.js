@@ -11,6 +11,7 @@ import Registration from "./pages/registration";
 import Loggedinuser from "./Privaterouter/Loggedinuser";
 import Loggedoutuser from "./Privaterouter/Loggedoutuser";
 import Rootlayout from "./Rootlayout";
+import Messages from "./pages/Messages";
 
 function App() {
   const router = createBrowserRouter(
@@ -19,6 +20,7 @@ function App() {
         <Route element={<Loggedinuser />}>
           <Route element={<Rootlayout />}>
             <Route path="/" element={<Home />}></Route>
+            <Route path="/messages" element={<Messages />}></Route>
           </Route>
         </Route>
         <Route element={<Loggedoutuser />}>
