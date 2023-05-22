@@ -113,6 +113,7 @@ const Groups = () => {
           memberArr.push({
             ...u,
             mreqID: arr?.mreqID,
+            grpID: arr?.grpID,
           });
         }
       });
@@ -181,7 +182,6 @@ const Groups = () => {
 
   // Member push from the group chat
   const handleMemberPush = (item) => {
-    console.log(item);
     set(push(ref(db, "grouppushmember")), {
       grpID: item.grpID,
       pushID: item.userID,
