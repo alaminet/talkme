@@ -36,6 +36,25 @@ const Groups = () => {
   const users = useSelector((user) => user.loginSlice.login);
   const defaultProfile = "./images/avatar_boy_cap.png";
 
+  // Get Group list from database
+  useEffect(() => {
+    const groupCountRef = ref(db, "groups/");
+    onValue(groupCountRef, (snap) => {
+      let grpArr = [];
+      snap.forEach((item) => {
+        let user = userlist.find((g) => g?.userID === item.val().groupAdmin);
+        if (item.val().groupAdmin === users.uid) {
+          grpArr.push({
+            ...item.val(),
+            grpID: item.key,
+            adminName: user?.username,
+          });
+        }
+      });
+      setGrouplist(grpArr);
+    });
+  }, []);
+
   // user list from firebase
   useEffect(() => {
     const userCountRef = ref(db, "users/");
@@ -56,6 +75,17 @@ const Groups = () => {
     });
   }, []);
 
+  // Group Member List from Firebase
+  useEffect(() => {
+    onValue(ref(db, "groupmembers"), (snap) => {
+      let memberArr = [];
+      snap.forEach((item) => {
+        memberArr.push({ ...item.val(), memberAcceptID: item.key });
+      });
+      setMemberlist(memberArr);
+    });
+  }, [userlist]);
+
   // Group member request list
   useEffect(() => {
     onValue(ref(db, "grouprequest"), (snap) => {
@@ -65,26 +95,7 @@ const Groups = () => {
       });
       setMemberreq(memberReqArr);
     });
-  }, [show, memberreqlist]);
-
-  // Get Group list from database
-  useEffect(() => {
-    const groupCountRef = ref(db, "groups/");
-    onValue(groupCountRef, (snap) => {
-      let grpArr = [];
-      snap.forEach((item) => {
-        let user = userlist.find((g) => g?.userID === item.val().groupAdmin);
-        if (item.val().groupAdmin === users.uid) {
-          grpArr.push({
-            ...item.val(),
-            grpID: item.key,
-            adminName: user?.username,
-          });
-        }
-      });
-      setGrouplist(grpArr);
-    });
-  }, []);
+  }, [db, show, memberreqlist]);
 
   // Group Request list
   const handlerequest = (item) => {
@@ -111,6 +122,7 @@ const Groups = () => {
 
   // Group Member accept by admin
   const handleMemberAccept = (item) => {
+    console.log(item);
     set(push(ref(db, "groupmembers")), {
       grpID: item.grpID,
       memberID: item.userID,
@@ -138,17 +150,6 @@ const Groups = () => {
     });
   };
 
-  // Group Member List from Firebase
-  useEffect(() => {
-    onValue(ref(db, "groupmembers"), (snap) => {
-      let memberArr = [];
-      snap.forEach((item) => {
-        memberArr.push({ ...item.val(), memberAcceptID: item.key });
-      });
-      setMemberlist(memberArr);
-    });
-  }, []);
-
   // Group Member list
   const handleMembers = (item) => {
     setShowmember(true);
@@ -170,6 +171,22 @@ const Groups = () => {
   const handleMemberRemove = (item) => {
     remove(ref(db, "groupmembers/" + item.memberAcceptID)).then(() => {
       toast.warn("Member Removed...!", {
+        position: "bottom-center",
+        autoClose: 1000,
+        pauseOnHover: false,
+        theme: "light",
+      });
+    });
+  };
+
+  // Member push from the group chat
+  const handleMemberPush = (item) => {
+    console.log(item);
+    set(push(ref(db, "grouppushmember")), {
+      grpID: item.grpID,
+      pushID: item.userID,
+    }).then(() => {
+      toast.warn("Member Push...!", {
         position: "bottom-center",
         autoClose: 1000,
         pauseOnHover: false,
@@ -225,8 +242,7 @@ const Groups = () => {
                           className="primary_btn unfriend"
                           variant="contained"
                           size="small"
-                          // onClick={() => handleMemberAccept(item)}
-                        >
+                          onClick={() => handleMemberPush(item)}>
                           Push
                         </Button>
                         <Button

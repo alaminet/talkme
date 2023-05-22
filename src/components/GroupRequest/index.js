@@ -85,7 +85,7 @@ const GroupRequest = () => {
       });
       setGrpreq(reqArr);
     });
-  }, [db, userlist, open]);
+  }, [db, open]);
 
   // Group Join request
   const handlejoin = (item) => {
