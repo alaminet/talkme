@@ -2,6 +2,7 @@ import React from "react";
 import "./style.css";
 import { Grid } from "@mui/material";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import ModalImage from "react-modal-image";
 
 const ChatBox = () => {
   const defaultProfile = "./images/avatar_boy_cap.png";
@@ -55,7 +56,12 @@ const ChatBox = () => {
               <div className="msg">
                 <div className="picture">
                   <picture>
-                    <img src="./images/lng.jpg" alt="" />
+                    <ModalImage
+                      small={"./images/lng.jpg"}
+                      medium={"./images/lng.jpg"}
+                      alt="Hello World!"
+                      showRotate="true"
+                    />
                   </picture>
                 </div>
               </div>
@@ -65,8 +71,31 @@ const ChatBox = () => {
               <div className="msg">
                 <div className="picture">
                   <picture>
-                    <img src="./images/sq.jpg" alt="" />
+                    <ModalImage
+                      small={"./images/sq.jpg"}
+                      medium={"./images/sq.jpg"}
+                      alt="Hello World!"
+                      showRotate="true"
+                    />
                   </picture>
+                </div>
+              </div>
+              <div className="time">today</div>
+            </div>
+            {/* Video massage */}
+            <div className="massage w-50 left">
+              <div className="msg">
+                <div className="video">
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    poster="https://assets.codepen.io/6093409/river.jpg">
+                    <source
+                      src="https://assets.codepen.io/6093409/river.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
                 </div>
               </div>
               <div className="time">today</div>

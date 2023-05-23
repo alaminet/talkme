@@ -120,9 +120,13 @@
 }
 
 .picture img {
-  width: auto;
-  height: 450px;
   object-fit: cover;
+}
+
+.__react_modal_image__header {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row-reverse;
 }
 
 .chat-input {
