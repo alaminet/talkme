@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import "./style.css";
 import { ToastContainer, toast } from "react-toastify";
 import { HiOutlineViewGridAdd } from "react-icons/hi";
-import Button from "@mui/material/Button";
 import Searchbar from "../Searchbar";
 
 import {
@@ -25,31 +24,9 @@ const MsgGroup = () => {
   const storage = getStorage();
   const [grouplist, setGrouplist] = useState([]);
   const [userlist, setUserlist] = useState([]);
-  const [grpreq, setGrpreq] = useState([]);
+  const [memberlist, setMemberlist] = useState([]);
   const users = useSelector((user) => user.loginSlice.login);
   const defaultProfile = "./images/avatar_boy_cap.png";
-
-  // Get Group list from database
-  useEffect(() => {
-    const groupCountRef = ref(db, "groups/");
-    onValue(groupCountRef, (snap) => {
-      let grpArr = [];
-      snap.forEach((item) => {
-        let user = userlist.find((g) => g?.userID === item.val().groupAdmin);
-        let memberreq = grpreq.find(
-          (r) => r?.requester === users.uid && r?.grpID === item.key
-        );
-        grpArr.push({
-          ...item.val(),
-          grpID: item.key,
-          adminName: user?.username,
-          requester: memberreq?.requester,
-          reqID: memberreq?.reqID,
-        });
-      });
-      setGrouplist(grpArr);
-    });
-  }, [db, users]);
 
   // user list from firebase
   useEffect(() => {
@@ -62,24 +39,41 @@ const MsgGroup = () => {
             userArr.push({ ...item.val(), userID: item.key, userPic: url });
           })
           .catch((error) => {
-            userArr.push({ ...item.val(), userID: item.key, userPic: null });
+            error &&
+              userArr.push({ ...item.val(), userID: item.key, userPic: null });
           })
           .then(() => {
             setUserlist([...userArr]);
           });
       });
     });
-  }, [db, grouplist, grpreq]);
+  }, [db]);
 
-  // Joined group member list
+  // Get Group members from database
   useEffect(() => {
-    onValue(ref(db, "grouprequest/"), (snap) => {
-      let reqArr = [];
+    onValue(ref(db, "groupmembers"), (snap) => {
+      let memberArr = [];
       snap.forEach((item) => {
-        let user = userlist.find((g) => g?.userID === item.val().requester);
-        reqArr.push({ ...item.val(), reqID: item.key });
+        memberArr.push(item.val().memberID);
       });
-      setGrpreq(reqArr);
+      setMemberlist(memberArr);
+    });
+  }, []);
+
+  // Get Group list from database
+  useEffect(() => {
+    const groupCountRef = ref(db, "groups/");
+    onValue(groupCountRef, (snap) => {
+      let grpArr = [];
+      snap.forEach((item) => {
+        let user = userlist.find((u) => u?.userID === item.val().groupAdmin);
+        grpArr.push({
+          ...item.val(),
+          grpID: item.key,
+          adminName: user?.username,
+        });
+      });
+      setGrouplist(grpArr);
     });
   }, [db]);
 
