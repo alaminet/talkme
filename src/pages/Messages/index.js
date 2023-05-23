@@ -4,6 +4,7 @@ import Grid from "@mui/material/Grid";
 import { Card } from "@mui/material";
 import MsgFriend from "../../components/MsgFriend";
 import MsgGroup from "../../components/MsgGroup";
+import ChatBox from "../../components/ChatBox";
 
 const Messages = () => {
   return (
@@ -30,7 +31,7 @@ const Messages = () => {
           </Grid>
         </Grid>
         <Grid item xs={8}>
-          xs=8
+          <ChatBox />
         </Grid>
       </Grid>
     </>

@@ -36,6 +36,8 @@ ol {
   --color-white: #fff;
   --color-black: #000;
   --color-black-50: #b1b1b1;
+  --color-black-25: rgba(0, 0, 0, 0.25);
+  --color-light-gray: #f2f2f2;
 }
 
 .btn-round {
