@@ -133,3 +133,30 @@
   height: 15%;
   width: 100%;
 }
+
+.input-wrapper {
+  padding: 20px;
+}
+
+.input-form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.input-btn button {
+  padding: 10px 20px;
+  border-style: none;
+  border-radius: 5px;
+  background-color: var(--color-primary);
+}
+
+.input-btn button svg {
+  fill: var(--color-white);
+  width: 30px;
+  height: 30px;
+}
+
+.input-btn:hover button {
+  opacity: 0.1;
+}

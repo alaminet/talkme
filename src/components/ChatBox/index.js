@@ -1,7 +1,8 @@
 import React from "react";
 import "./style.css";
-import { Grid } from "@mui/material";
+import { Grid, IconButton } from "@mui/material";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { IoMdSend } from "react-icons/io";
 import ModalImage from "react-modal-image";
 
 const ChatBox = () => {
@@ -87,9 +88,10 @@ const ChatBox = () => {
               <div className="msg">
                 <div className="video">
                   <video
-                    autoPlay
-                    loop
-                    muted
+                    // autoPlay
+                    // loop
+                    controls
+                    width="100%"
                     poster="https://assets.codepen.io/6093409/river.jpg">
                     <source
                       src="https://assets.codepen.io/6093409/river.mp4"
@@ -100,10 +102,66 @@ const ChatBox = () => {
               </div>
               <div className="time">today</div>
             </div>
+            <div className="massage w-50 right">
+              <div className="msg">
+                <div className="video">
+                  <video
+                    // autoPlay
+                    // loop
+                    controls
+                    width="100%"
+                    poster="https://assets.codepen.io/6093409/river.jpg">
+                    <source
+                      src="https://assets.codepen.io/6093409/river.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+              </div>
+              <div className="time">today</div>
+            </div>
+            {/* Audio Message */}
+            <div className="massage w-50 left">
+              <div className="msg">
+                <div className="audio">
+                  <audio
+                    // autoPlay
+                    // loop
+                    controls>
+                    <source src="" type="audio/mpeg" />
+                  </audio>
+                </div>
+              </div>
+              <div className="time">today</div>
+            </div>
+            <div className="massage w-50 right">
+              <div className="msg">
+                <div className="audio">
+                  <audio
+                    // autoPlay
+                    // loop
+                    controls>
+                    <source src="" type="audio/mpeg" />
+                  </audio>
+                </div>
+              </div>
+              <div className="time">today</div>
+            </div>
           </div>
         </Grid>
         <Grid item className="chat-input">
-          input
+          <div className="input-wrapper">
+            <form className="input-form">
+              <div className="input-field">
+                <input type="text" placeholder="type your messages..." />
+              </div>
+              <div className="input-btn">
+                <IconButton type="submit">
+                  <IoMdSend />
+                </IconButton>
+              </div>
+            </form>
+          </div>
         </Grid>
       </Grid>
     </>
