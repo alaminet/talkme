@@ -136,17 +136,58 @@
 
 .input-wrapper {
   padding: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.input-opt .MuiSpeedDial-root {
+  bottom: 40px !important;
+  right: 45px !important;
 }
 
 .input-form {
+  width: 90%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: var(--color-light-gray);
+  padding-left: 15px;
+}
+
+.input-field {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.input-opt .MuiSpeedDial-root {
+  bottom: -30px;
+  right: -60px;
+}
+
+.input-field input[type="text"] {
+  height: 45px;
+  width: 100%;
+  background-color: var(--color-light-gray);
+  border-style: none;
+  font-family: var(--font-primary);
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.input-field input:focus[type="text"] {
+  outline: none;
+}
+
+.input-btn {
+  border: 1px solid transparent;
 }
 
 .input-btn button {
   padding: 10px 20px;
-  border-style: none;
   border-radius: 5px;
   background-color: var(--color-primary);
 }
@@ -157,6 +198,14 @@
   height: 30px;
 }
 
+.input-btn:hover {
+  border-color: var(--color-primary);
+}
+
 .input-btn:hover button {
-  opacity: 0.1;
+  background-color: var(--color-white);
+}
+
+.input-btn:hover button svg {
+  fill: var(--color-primary);
 }

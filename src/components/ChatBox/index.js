@@ -1,12 +1,23 @@
 import React from "react";
 import "./style.css";
 import { Grid, IconButton } from "@mui/material";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import { BsThreeDotsVertical, BsCamera } from "react-icons/bs";
 import { IoMdSend } from "react-icons/io";
+import { GrGallery } from "react-icons/gr";
+import { AiOutlineAudio } from "react-icons/ai";
 import ModalImage from "react-modal-image";
+import SpeedDial from "@mui/material/SpeedDial";
+import SpeedDialIcon from "@mui/material/SpeedDialIcon";
+import SpeedDialAction from "@mui/material/SpeedDialAction";
 
 const ChatBox = () => {
   const defaultProfile = "./images/avatar_boy_cap.png";
+  const speedIcon = [
+    { icon: <GrGallery />, name: "Gallery" },
+    { icon: <BsCamera />, name: "Camera" },
+    { icon: <AiOutlineAudio />, name: "Audio" },
+  ];
+
   return (
     <>
       <Grid
@@ -153,7 +164,7 @@ const ChatBox = () => {
           <div className="input-wrapper">
             <form className="input-form">
               <div className="input-field">
-                <input type="text" placeholder="type your messages..." />
+                <input type="text" placeholder="messages" />
               </div>
               <div className="input-btn">
                 <IconButton type="submit">
@@ -161,6 +172,20 @@ const ChatBox = () => {
                 </IconButton>
               </div>
             </form>
+            <div className="input-opt">
+              <SpeedDial
+                ariaLabel="SpeedDial basic example"
+                sx={{ position: "absolute", bottom: 16, right: 16 }}
+                icon={<SpeedDialIcon />}>
+                {speedIcon.map((action, i) => (
+                  <SpeedDialAction
+                    key={i}
+                    icon={action.icon}
+                    tooltipTitle={action.name}
+                  />
+                ))}
+              </SpeedDial>
+            </div>
           </div>
         </Grid>
       </Grid>
