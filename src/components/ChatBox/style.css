@@ -16,6 +16,7 @@
 
 .head-picture {
   position: relative;
+  z-index: 0;
 }
 
 .status {
@@ -141,8 +142,9 @@
 }
 
 .input-opt .MuiSpeedDial-root {
-  bottom: 40px !important;
-  right: 45px !important;
+  position: absolute;
+  left: -20px;
+  bottom: -4px;
 }
 
 .input-form {
@@ -161,9 +163,13 @@
   justify-content: space-between;
 }
 
-.input-opt .MuiSpeedDial-root {
-  bottom: -30px;
-  right: -60px;
+.input-opt {
+  z-index: 0;
+  position: relative;
+}
+
+.input-opt .css-4reedn-MuiSpeedDial-root {
+  z-index: 1;
 }
 
 .input-field input[type="text"] {
@@ -208,4 +214,18 @@
 
 .input-btn:hover button svg {
   fill: var(--color-primary);
+}
+
+/* Camera CSS */
+.camera-opt {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.272);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

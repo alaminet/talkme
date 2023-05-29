@@ -1,22 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import "./style.css";
 import { Grid, IconButton } from "@mui/material";
 import { BsThreeDotsVertical, BsCamera } from "react-icons/bs";
 import { IoMdSend } from "react-icons/io";
+import { IoCloseSharp } from "react-icons/io5";
 import { GrGallery } from "react-icons/gr";
 import { AiOutlineAudio } from "react-icons/ai";
 import ModalImage from "react-modal-image";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
+import Camera from "react-html5-camera-photo";
+import "react-html5-camera-photo/build/css/index.css";
 
 const ChatBox = () => {
+  const [camOpen, setCamOpen] = useState(false);
   const defaultProfile = "./images/avatar_boy_cap.png";
   const speedIcon = [
     { icon: <GrGallery />, name: "Gallery" },
-    { icon: <BsCamera />, name: "Camera" },
+    { icon: <BsCamera onClick={() => setCamOpen(true)} />, name: "Camera" },
     { icon: <AiOutlineAudio />, name: "Audio" },
   ];
+
+  // take photos from camera
+  function handleTakePhoto(dataUri) {
+    // Do stuff with the photo...
+    console.log("takePhoto");
+  }
 
   return (
     <>
@@ -187,6 +197,19 @@ const ChatBox = () => {
               </SpeedDial>
             </div>
           </div>
+          {camOpen && (
+            <div className="camera-opt">
+              <div className="camera-wrapper">
+                <IoCloseSharp onClick={() => setCamOpen(false)} />
+                <Camera
+                  onTakePhoto={(dataUri) => {
+                    handleTakePhoto(dataUri);
+                  }}
+                  isImageMirror={true}
+                />
+              </div>
+            </div>
+          )}
         </Grid>
       </Grid>
     </>
