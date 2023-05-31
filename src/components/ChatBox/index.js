@@ -25,7 +25,7 @@ const ChatBox = () => {
   // take photos from camera
   function handleTakePhoto(dataUri) {
     // Do stuff with the photo...
-    console.log("takePhoto");
+    console.log(dataUri);
   }
 
   return (
@@ -200,7 +200,9 @@ const ChatBox = () => {
           {camOpen && (
             <div className="camera-opt">
               <div className="camera-wrapper">
-                <IoCloseSharp onClick={() => setCamOpen(false)} />
+                <div className="closed">
+                  <IoCloseSharp onClick={() => setCamOpen(false)} />
+                </div>
                 <Camera
                   onTakePhoto={(dataUri) => {
                     handleTakePhoto(dataUri);

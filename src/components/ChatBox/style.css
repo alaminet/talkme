@@ -229,3 +229,21 @@
   justify-content: center;
   align-items: center;
 }
+
+.closed {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--color-white);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+#inner-circle {
+  cursor: pointer;
+}
