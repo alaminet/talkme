@@ -12,9 +12,13 @@ import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import Camera from "react-html5-camera-photo";
 import "react-html5-camera-photo/build/css/index.css";
+import { useSelector } from "react-redux";
 
 const ChatBox = () => {
   const [camOpen, setCamOpen] = useState(false);
+  const activeSingleChat = useSelector(
+    (state) => state.activeSlice.activeSingle
+  );
   const defaultProfile = "./images/avatar_boy_cap.png";
   const speedIcon = [
     { icon: <GrGallery />, name: "Gallery" },
@@ -44,12 +48,15 @@ const ChatBox = () => {
                 <div className="status"></div>
                 <div className="user_pic_70">
                   <picture>
-                    <img src={defaultProfile} alt="profile-pic" />
+                    <img
+                      src={activeSingleChat.userPic ?? defaultProfile}
+                      alt={activeSingleChat.username}
+                    />
                   </picture>
                 </div>
               </div>
               <div className="user_info">
-                <div className="name">Name</div>
+                <div className="name">{activeSingleChat.username}</div>
                 <div className="sub_name">Online</div>
               </div>
             </div>

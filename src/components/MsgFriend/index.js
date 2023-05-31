@@ -12,16 +12,18 @@ import {
   set,
 } from "firebase/database";
 import { ToastContainer, toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   getDownloadURL,
   getStorage,
   ref as storageRef,
 } from "firebase/storage";
+import { ActiveSingle } from "../../features/Slice/ActiveSignleSlice";
 
 const MsgFriend = () => {
   const db = getDatabase();
   const storage = getStorage();
+  const dispatch = useDispatch();
   const [userlist, setUserlist] = useState([]);
   const [frndlist, setFrndlist] = useState([]);
   const users = useSelector((user) => user.loginSlice.login);
@@ -112,6 +114,18 @@ const MsgFriend = () => {
     });
   };
 
+  // Active frind slice
+  const handleSingle = (item) => {
+    dispatch(
+      ActiveSingle({
+        status: "single",
+        userID: item.userID,
+        username: item.username,
+        userPic: item.userPic,
+      })
+    );
+  };
+
   return (
     <>
       <ToastContainer />
@@ -129,7 +143,10 @@ const MsgFriend = () => {
         </div>
         <div className="card_body">
           {userlist.map((item, i) => (
-            <div key={i} className="body_list">
+            <div
+              key={i}
+              className="body_list"
+              onClick={() => handleSingle(item)}>
               <div className="user_pic_70">
                 <picture>
                   <img
