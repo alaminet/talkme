@@ -36,25 +36,6 @@ const Groups = () => {
   const users = useSelector((user) => user.loginSlice.login);
   const defaultProfile = "./images/avatar_boy_cap.png";
 
-  // Get Group list from database
-  useEffect(() => {
-    const groupCountRef = ref(db, "groups/");
-    onValue(groupCountRef, (snap) => {
-      let grpArr = [];
-      snap.forEach((item) => {
-        let user = userlist.find((g) => g?.userID === item.val().groupAdmin);
-        if (item.val().groupAdmin === users.uid) {
-          grpArr.push({
-            ...item.val(),
-            grpID: item.key,
-            adminName: user?.username,
-          });
-        }
-      });
-      setGrouplist(grpArr);
-    });
-  }, []);
-
   // user list from firebase
   useEffect(() => {
     const userCountRef = ref(db, "users/");
@@ -83,6 +64,31 @@ const Groups = () => {
         memberArr.push({ ...item.val(), memberAcceptID: item.key });
       });
       setMemberlist(memberArr);
+    });
+  }, []);
+
+  // Get Group list from database
+  useEffect(() => {
+    const groupCountRef = ref(db, "groups/");
+    onValue(groupCountRef, (snap) => {
+      let grpArr = [];
+      let reqArr = [];
+      snap.forEach((item) => {
+        let user = userlist.find((g) => g?.userID === item.val().groupAdmin);
+        let request = memberreq.find((m) => m?.grpID === item.key);
+        if (item.val().groupAdmin === users.uid) {
+          if (item.key === request?.grpID) {
+            reqArr.push({ ...request });
+          }
+          grpArr.push({
+            ...item.val(),
+            grpID: item.key,
+            adminName: user?.username,
+            grpReq: reqArr?.length,
+          });
+        }
+      });
+      setGrouplist(grpArr);
     });
   }, [userlist]);
 
@@ -322,7 +328,7 @@ const Groups = () => {
                   <div className="sub_name">{item.groupTag}</div>
                 </div>
                 <div className="btn_group">
-                  <Badge badgeContent={memberreqlist.length} max={9}>
+                  <Badge badgeContent={item.grpReq} max={9}>
                     <Button
                       className="primary_btn unfriend"
                       variant="contained"
