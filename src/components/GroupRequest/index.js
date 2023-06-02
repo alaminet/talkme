@@ -23,8 +23,8 @@ import {
 const GroupRequest = () => {
   const db = getDatabase();
   const storage = getStorage();
-  const [grouplist, setGrouplist] = useState([]);
   const [userlist, setUserlist] = useState([]);
+  const [grouplist, setGrouplist] = useState([]);
   const [grpreq, setGrpreq] = useState([]);
   const users = useSelector((user) => user.loginSlice.login);
   const defaultProfile = "./images/avatar_boy_cap.png";
@@ -32,6 +32,26 @@ const GroupRequest = () => {
   // GroupModal
   const [open, setOpen] = useState(false);
   const handleNew = () => setOpen(true);
+
+  // user list from firebase
+  useEffect(() => {
+    const userCountRef = ref(db, "users/");
+    onValue(userCountRef, (snap) => {
+      let userArr = [];
+      snap.forEach((item) => {
+        getDownloadURL(storageRef(storage, "userpic/" + item.key))
+          .then((url) => {
+            userArr.push({ ...item.val(), userID: item.key, userPic: url });
+          })
+          .catch((error) => {
+            userArr.push({ ...item.val(), userID: item.key, userPic: null });
+          })
+          .then(() => {
+            setUserlist([...userArr]);
+          });
+      });
+    });
+  }, []);
 
   // Get Group list from database
   useEffect(() => {
@@ -53,27 +73,7 @@ const GroupRequest = () => {
       });
       setGrouplist(grpArr);
     });
-  }, [db, users]);
-
-  // user list from firebase
-  useEffect(() => {
-    const userCountRef = ref(db, "users/");
-    onValue(userCountRef, (snap) => {
-      let userArr = [];
-      snap.forEach((item) => {
-        getDownloadURL(storageRef(storage, "userpic/" + item.key))
-          .then((url) => {
-            userArr.push({ ...item.val(), userID: item.key, userPic: url });
-          })
-          .catch((error) => {
-            userArr.push({ ...item.val(), userID: item.key, userPic: null });
-          })
-          .then(() => {
-            setUserlist([...userArr]);
-          });
-      });
-    });
-  }, [db, grouplist, grpreq]);
+  }, [userlist]);
 
   // Joined group member list
   useEffect(() => {
@@ -143,7 +143,7 @@ const GroupRequest = () => {
               <div className="user_info">
                 <div className="name">
                   {item.groupName}{" "}
-                  <span className="group_admin">-by {item?.adminName}</span>
+                  <span className="group_admin">-by {item.adminName}</span>
                 </div>
                 <div className="sub_name">{item.groupTag}</div>
               </div>

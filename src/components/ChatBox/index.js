@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.css";
 import { Grid, IconButton } from "@mui/material";
 import { BsThreeDotsVertical, BsCamera } from "react-icons/bs";
@@ -13,9 +13,21 @@ import SpeedDialAction from "@mui/material/SpeedDialAction";
 import Camera from "react-html5-camera-photo";
 import "react-html5-camera-photo/build/css/index.css";
 import { useSelector } from "react-redux";
+import { getDatabase, onValue, push, ref, set } from "firebase/database";
+import {
+  getDownloadURL,
+  getStorage,
+  ref as storageRef,
+} from "firebase/storage";
+import moment from "moment/moment";
 
 const ChatBox = () => {
+  const db = getDatabase();
+  const storage = getStorage();
   const [camOpen, setCamOpen] = useState(false);
+  const [msgSend, setMsgSend] = useState("");
+  const [textMsg, setTextMsg] = useState([]);
+  const users = useSelector((user) => user.loginSlice.login);
   const activeSingleChat = useSelector(
     (state) => state.activeSlice.activeSingle
   );
@@ -31,6 +43,42 @@ const ChatBox = () => {
     // Do stuff with the photo...
     console.log(dataUri);
   }
+
+  // Send Message from input box
+  const handleSubmit = () => {
+    if (activeSingleChat?.status == "single") {
+      if (msgSend !== "") {
+        set(push(ref(db, "singleChat")), {
+          chatSend: users.uid,
+          chatReceive: activeSingleChat.userID,
+          msg: msgSend,
+          time: `${new Date()}`,
+        }).then(() => {
+          setMsgSend("");
+        });
+      }
+    } else {
+      console.log("for group msg");
+    }
+  };
+
+  // Read msg from database
+  useEffect(() => {
+    onValue(ref(db, "singleChat/"), (snapshot) => {
+      let singleMsgArr = [];
+      snapshot.forEach((item) => {
+        if (
+          (item.val().chatSend == users.uid &&
+            item.val().chatReceive == activeSingleChat?.userID) ||
+          (item.val().chatSend == activeSingleChat?.userID &&
+            item.val().chatReceive == users.uid)
+        ) {
+          singleMsgArr.push({ ...item.val(), msgID: item.key });
+        }
+        setTextMsg(singleMsgArr);
+      });
+    });
+  }, [activeSingleChat]);
 
   return (
     <>
@@ -49,14 +97,14 @@ const ChatBox = () => {
                 <div className="user_pic_70">
                   <picture>
                     <img
-                      src={activeSingleChat.userPic ?? defaultProfile}
-                      alt={activeSingleChat.username}
+                      src={activeSingleChat?.userPic ?? defaultProfile}
+                      alt={activeSingleChat?.username}
                     />
                   </picture>
                 </div>
               </div>
               <div className="user_info">
-                <div className="name">{activeSingleChat.username}</div>
+                <div className="name">{activeSingleChat?.username}</div>
                 <div className="sub_name">Online</div>
               </div>
             </div>
@@ -67,8 +115,41 @@ const ChatBox = () => {
         </Grid>
         <Grid item className="chat-body">
           <div className="chat-body-wrapper">
+            {activeSingleChat?.status == "single"
+              ? textMsg?.map((item, i) =>
+                  item.chatSend == activeSingleChat.userID ? (
+                    item?.msg ? (
+                      <>
+                        <div key={i} className="massage w-50 left">
+                          <div className="msg">
+                            <div className="text">{item?.msg}</div>
+                          </div>
+                          <div className="time">
+                            {moment(item?.time).calendar()}
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      "PicMsg"
+                    )
+                  ) : item?.msg ? (
+                    <>
+                      <div key={i} className="massage w-50 right">
+                        <div className="msg">
+                          <div className="text">{item?.msg}</div>
+                        </div>
+                        <div className="time">
+                          {moment(item?.time).calendar()}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    "PicMsg"
+                  )
+                )
+              : "Group msg"}
             {/* text message */}
-            <div className="massage w-50 left">
+            {/* <div className="massage w-50 left">
               <div className="msg">
                 <div className="text">Lorem Ipsum</div>
               </div>
@@ -79,9 +160,9 @@ const ChatBox = () => {
                 <div className="text">Lorem Ipsum</div>
               </div>
               <div className="time">today</div>
-            </div>
+            </div> */}
             {/* picture massage */}
-            <div className="massage w-50 left">
+            {/* <div className="massage w-50 left">
               <div className="msg">
                 <div className="picture">
                   <picture>
@@ -110,9 +191,9 @@ const ChatBox = () => {
                 </div>
               </div>
               <div className="time">today</div>
-            </div>
+            </div> */}
             {/* Video massage */}
-            <div className="massage w-50 left">
+            {/* <div className="massage w-50 left">
               <div className="msg">
                 <div className="video">
                   <video
@@ -147,9 +228,9 @@ const ChatBox = () => {
                 </div>
               </div>
               <div className="time">today</div>
-            </div>
+            </div> */}
             {/* Audio Message */}
-            <div className="massage w-50 left">
+            {/* <div className="massage w-50 left">
               <div className="msg">
                 <div className="audio">
                   <audio
@@ -174,21 +255,26 @@ const ChatBox = () => {
                 </div>
               </div>
               <div className="time">today</div>
-            </div>
+            </div> */}
           </div>
         </Grid>
         <Grid item className="chat-input">
           <div className="input-wrapper">
-            <form className="input-form">
+            <div className="input-form">
               <div className="input-field">
-                <input type="text" placeholder="messages" />
+                <input
+                  type="text"
+                  placeholder="messages"
+                  value={msgSend}
+                  onChange={(e) => setMsgSend(e.target.value)}
+                />
               </div>
               <div className="input-btn">
-                <IconButton type="submit">
+                <IconButton onClick={handleSubmit}>
                   <IoMdSend />
                 </IconButton>
               </div>
-            </form>
+            </div>
             <div className="input-opt">
               <SpeedDial
                 ariaLabel="SpeedDial basic example"

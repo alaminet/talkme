@@ -157,9 +157,9 @@ const MsgFriend = () => {
               </div>
               <div className="user_info">
                 <div className="name">{item.username}</div>
-                <div className="sub_name">{item.userID}</div>
+                {/* <div className="sub_name">{item.userID}</div> */}
               </div>
-              {/* <div className="btn_group">
+              <div className="btn_group">
                 <Button
                   className="primary_btn"
                   variant="contained"
@@ -174,7 +174,7 @@ const MsgFriend = () => {
                   onClick={() => handleblock(item)}>
                   Block
                 </Button>
-              </div> */}
+              </div>
             </div>
           ))}
         </div>

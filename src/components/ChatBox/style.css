@@ -48,15 +48,17 @@
   position: relative;
   display: inline-block;
   box-sizing: border-box;
-  background-color: var(--color-light-gray);
   padding: 15px 20px;
 }
 
 .left .msg {
+  background-color: var(--color-light-gray);
   border-radius: 10px 10px 10px 0px;
 }
 
 .right .msg {
+  color: var(--color-white);
+  background-color: var(--color-primary);
   border-radius: 10px 10px 0px 10px;
 }
 
@@ -77,6 +79,7 @@
 }
 
 .right .msg::after {
+  border-bottom: 15px solid var(--color-primary);
   right: -15px;
 }
 
