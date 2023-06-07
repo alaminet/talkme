@@ -185,6 +185,7 @@
   font-weight: 500;
   font-size: 14px;
   line-height: 16px;
+  padding-right: 70px;
 }
 
 .input-field input:focus[type="text"] {
@@ -249,4 +250,21 @@
 
 #inner-circle {
   cursor: pointer;
+}
+
+.box-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  background-color: var(--color-white);
+  border-style: none;
+  padding: 15px;
+}
+
+.css-e53awj-MuiStack-root {
+  justify-content: center;
+  align-items: center;
+  padding-top: 15px;
 }

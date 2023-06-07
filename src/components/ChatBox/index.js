@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "./style.css";
 import { Grid, IconButton } from "@mui/material";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import { ToastContainer, toast } from "react-toastify";
 import { BsThreeDotsVertical, BsCamera } from "react-icons/bs";
 import { IoMdSend } from "react-icons/io";
+import { MdSend } from "react-icons/md";
+import { MdDeleteForever } from "react-icons/md";
 import { IoCloseSharp } from "react-icons/io5";
 import { GrGallery } from "react-icons/gr";
 import { AiOutlineAudio } from "react-icons/ai";
@@ -18,8 +25,12 @@ import {
   getDownloadURL,
   getStorage,
   ref as storageRef,
+  uploadBytes,
+  uploadBytesResumable,
+  uploadString,
 } from "firebase/storage";
 import moment from "moment/moment";
+import { v4 as uuidv4 } from "uuid";
 
 const ChatBox = () => {
   const db = getDatabase();
@@ -27,24 +38,51 @@ const ChatBox = () => {
   const [camOpen, setCamOpen] = useState(false);
   const [msgSend, setMsgSend] = useState("");
   const [textMsg, setTextMsg] = useState([]);
+  const [capter, setCapter] = useState(null);
+  const [modalOpen, SetModalOpen] = useState(false);
   const users = useSelector((user) => user.loginSlice.login);
   const activeSingleChat = useSelector(
     (state) => state.activeSlice.activeSingle
   );
   const defaultProfile = "./images/avatar_boy_cap.png";
-  const speedIcon = [
-    { icon: <GrGallery />, name: "Gallery" },
-    { icon: <BsCamera onClick={() => setCamOpen(true)} />, name: "Camera" },
-    { icon: <AiOutlineAudio />, name: "Audio" },
-  ];
 
   // take photos from camera
   function handleTakePhoto(dataUri) {
-    // Do stuff with the photo...
-    console.log(dataUri);
+    setCapter(dataUri);
+    SetModalOpen(true);
   }
 
+  // Input gallery image
+  const handleGalleryInput = (e) => {
+    if (activeSingleChat?.status == "single") {
+      uploadBytes(
+        storageRef(storage, "singleMsgPic/" + uuidv4()),
+        e.target.files[0]
+      )
+        .then((snapshot) => {
+          getDownloadURL(storageRef(storage, snapshot.metadata.fullPath)).then(
+            (url) => {
+              set(push(ref(db, "singleChat")), {
+                chatSend: users.uid,
+                chatReceive: activeSingleChat.userID,
+                picMsg: url,
+                time: `${new Date()}`,
+              });
+            }
+          );
+        })
+        .catch((error) => {
+          console.log(error.code);
+        });
+    } else {
+      console.log("for group msg");
+    }
+  };
+
   // Send Message from input box
+  const handleEnterPress = (e) => {
+    e.key === "Enter" && handleSubmit();
+  };
   const handleSubmit = () => {
     if (activeSingleChat?.status == "single") {
       if (msgSend !== "") {
@@ -55,6 +93,38 @@ const ChatBox = () => {
           time: `${new Date()}`,
         }).then(() => {
           setMsgSend("");
+        });
+      }
+    } else {
+      console.log("for group msg");
+    }
+  };
+
+  // Send Camera Capter from input speeddail
+  const handleCaptureSend = () => {
+    if (activeSingleChat?.status == "single") {
+      if (capter !== null) {
+        uploadString(
+          storageRef(storage, "singleMsgPic/" + uuidv4()),
+          capter,
+          "data_url"
+        ).then((snapshot) => {
+          SetModalOpen(false);
+          setCamOpen(false);
+          getDownloadURL(storageRef(storage, snapshot.metadata.fullPath))
+            .then((url) => {
+              set(push(ref(db, "singleChat")), {
+                chatSend: users.uid,
+                chatReceive: activeSingleChat.userID,
+                picMsg: url,
+                time: `${new Date()}`,
+              }).then(() => {
+                setCapter(null);
+              });
+            })
+            .catch((error) => {
+              console.log(error.code);
+            });
         });
       }
     } else {
@@ -80,8 +150,35 @@ const ChatBox = () => {
     });
   }, [activeSingleChat]);
 
+  // Speed icons
+  const speedIcon = [
+    {
+      icon: (
+        <>
+          <label>
+            {/* onClick={() => SetModalGall(true)} */}
+            <GrGallery />
+            <input
+              hidden
+              onChange={handleGalleryInput}
+              type="file"
+              accept="image/*"
+            />
+          </label>
+        </>
+      ),
+      name: "Gallery",
+    },
+    {
+      icon: <BsCamera onClick={() => setCamOpen(true)} />,
+      name: "Camera",
+    },
+    { icon: <AiOutlineAudio />, name: "Audio" },
+  ];
+
   return (
     <>
+      <ToastContainer />
       <Grid
         height="100vh"
         p={3}
@@ -125,26 +222,60 @@ const ChatBox = () => {
                             <div className="text">{item?.msg}</div>
                           </div>
                           <div className="time">
-                            {moment(item?.time).calendar()}
+                            {moment(item?.time).fromNow()}
                           </div>
                         </div>
                       </>
+                    ) : item?.picMsg ? (
+                      <div className="massage w-50 left">
+                        <div className="msg">
+                          <div className="picture">
+                            <picture>
+                              <ModalImage
+                                small={item?.picMsg}
+                                medium={item?.picMsg}
+                                alt=""
+                                showRotate="true"
+                              />
+                            </picture>
+                          </div>
+                        </div>
+                        <div className="time">
+                          {moment(item?.time).fromNow()}
+                        </div>
+                      </div>
                     ) : (
-                      "PicMsg"
+                      "videoMsg"
                     )
                   ) : item?.msg ? (
                     <>
-                      <div key={i} className="massage w-50 right">
+                      <div className="massage w-50 right">
                         <div className="msg">
                           <div className="text">{item?.msg}</div>
                         </div>
                         <div className="time">
-                          {moment(item?.time).calendar()}
+                          {moment(item?.time).fromNow()}
                         </div>
                       </div>
                     </>
+                  ) : item?.picMsg ? (
+                    <div className="massage w-50 right">
+                      <div className="msg">
+                        <div className="picture">
+                          <picture>
+                            <ModalImage
+                              small={item?.picMsg}
+                              medium={item?.picMsg}
+                              alt=""
+                              showRotate="true"
+                            />
+                          </picture>
+                        </div>
+                      </div>
+                      <div className="time">{moment(item?.time).fromNow()}</div>
+                    </div>
                   ) : (
-                    "PicMsg"
+                    "videoMsg"
                   )
                 )
               : "Group msg"}
@@ -266,6 +397,7 @@ const ChatBox = () => {
                   type="text"
                   placeholder="messages"
                   value={msgSend}
+                  onKeyUp={handleEnterPress}
                   onChange={(e) => setMsgSend(e.target.value)}
                 />
               </div>
@@ -280,9 +412,9 @@ const ChatBox = () => {
                 ariaLabel="SpeedDial basic example"
                 sx={{ position: "absolute", bottom: 16, right: 16 }}
                 icon={<SpeedDialIcon />}>
-                {speedIcon.map((action, i) => (
+                {speedIcon.map((action, j) => (
                   <SpeedDialAction
-                    key={i}
+                    key={j}
                     icon={action.icon}
                     tooltipTitle={action.name}
                   />
@@ -304,6 +436,35 @@ const ChatBox = () => {
                 />
               </div>
             </div>
+          )}
+          {/* Modal for Capter image by webcam */}
+          {capter && (
+            <Modal open={modalOpen} onClose={() => SetModalOpen(false)}>
+              <Box className="box-modal">
+                <div className="capter-img">
+                  <picture>
+                    <img src={capter} alt="" />
+                  </picture>
+                </div>
+                <div>
+                  <Stack direction="row" spacing={2}>
+                    <Button
+                      color="error"
+                      variant="outlined"
+                      onClick={() => SetModalOpen(false)}
+                      startIcon={<MdDeleteForever />}>
+                      Delete
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={handleCaptureSend}
+                      endIcon={<MdSend />}>
+                      Send
+                    </Button>
+                  </Stack>
+                </div>
+              </Box>
+            </Modal>
           )}
         </Grid>
       </Grid>
