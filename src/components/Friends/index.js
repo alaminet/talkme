@@ -24,6 +24,7 @@ const Friends = () => {
   const storage = getStorage();
   const [userlist, setUserlist] = useState([]);
   const [frndlist, setFrndlist] = useState([]);
+  const [onlineUser, setOnlineUser] = useState([]);
   const users = useSelector((user) => user.loginSlice.login);
   const defaultProfile = "./images/avatar_boy_cap.png";
 
@@ -65,6 +66,17 @@ const Friends = () => {
       });
     });
   }, [db, frndlist]);
+
+  // Read online users
+  useEffect(() => {
+    onValue(ref(db, "online/"), (snap) => {
+      let online = [];
+      snap.forEach((item) => {
+        online.push(item.key);
+      });
+      setOnlineUser(online);
+    });
+  }, [frndlist]);
 
   // Get frind list from firebase
   useEffect(() => {
@@ -130,17 +142,24 @@ const Friends = () => {
         <div className="card_body">
           {userlist.map((item, i) => (
             <div key={i} className="body_list">
-              <div className="user_pic_70">
-                <picture>
-                  <img
-                    src={item.userPic ?? defaultProfile}
-                    alt={item.username}
-                  />
-                </picture>
+              <div className="head-picture">
+                {onlineUser.includes(item.userID) && (
+                  <div className="status"></div>
+                )}
+                <div className="user_pic_70">
+                  <picture>
+                    <img
+                      src={item?.userPic ?? defaultProfile}
+                      alt={item?.username}
+                    />
+                  </picture>
+                </div>
               </div>
               <div className="user_info">
                 <div className="name">{item.username}</div>
-                <div className="sub_name">{item.userID}</div>
+                <div className="sub_name">
+                  {onlineUser.includes(item.userID) ? "Online" : "Offline"}
+                </div>
               </div>
               <div className="btn_group">
                 <Button

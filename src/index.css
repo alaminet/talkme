@@ -152,6 +152,11 @@ ol {
   border-color: var(--color-primary) !important;
 }
 
+.head-picture {
+  position: relative;
+  z-index: 0;
+}
+
 .status {
   content: "";
   position: absolute;

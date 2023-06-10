@@ -21,6 +21,7 @@ const Userlist = () => {
   const [userList, setUserlist] = useState([]);
   const [friendlist, setFriendlist] = useState([]);
   const [blockedlist, setBlockedlist] = useState([]);
+  const [onlineUser, setOnlineUser] = useState([]);
   const [friendReq, setFriendReq] = useState([]);
   const defaultProfile = "./images/avatar_boy_cap.png";
   const users = useSelector((user) => user.loginSlice.login);
@@ -64,6 +65,17 @@ const Userlist = () => {
       });
     });
   }, [friendlist, friendReq, blockedlist]);
+
+  // Read online users
+  useEffect(() => {
+    onValue(ref(db, "online/"), (snap) => {
+      let online = [];
+      snap.forEach((item) => {
+        online.push(item.key);
+      });
+      setOnlineUser(online);
+    });
+  }, [userList]);
 
   // Friendlist from firebase
   useEffect(() => {
@@ -151,17 +163,22 @@ const Userlist = () => {
         <div className="card_body">
           {userList.map((item, i) => (
             <div key={i} className="body_list">
-              <div className="user_pic_70">
-                <picture>
-                  <img
-                    src={item?.userPic ?? defaultProfile}
-                    alt={item?.username}
-                  />
-                </picture>
+              <div className="head-picture">
+                {onlineUser.includes(item.id) && <div className="status"></div>}
+                <div className="user_pic_70">
+                  <picture>
+                    <img
+                      src={item?.userPic ?? defaultProfile}
+                      alt={item?.username}
+                    />
+                  </picture>
+                </div>
               </div>
               <div className="user_info">
                 <div className="name">{item.username}</div>
-                <div className="sub_name">{item.id}</div>
+                <div className="sub_name">
+                  {onlineUser.includes(item.id) ? "Online" : "Offline"}
+                </div>
               </div>
               <div className="btn_group">
                 {friendReq.includes(item.id + users.uid) ||
