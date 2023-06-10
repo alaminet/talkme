@@ -31,13 +31,16 @@ import {
 } from "firebase/storage";
 import moment from "moment/moment";
 import { v4 as uuidv4 } from "uuid";
+import { AudioRecorder } from "react-audio-voice-recorder";
 
 const ChatBox = () => {
   const db = getDatabase();
   const storage = getStorage();
   const [camOpen, setCamOpen] = useState(false);
+  const [audioRec, setAudioRec] = useState(false);
   const [msgSend, setMsgSend] = useState("");
   const [textMsg, setTextMsg] = useState([]);
+  const [onlineUser, setOnlineUser] = useState([]);
   const [capter, setCapter] = useState(null);
   const [modalOpen, SetModalOpen] = useState(false);
   const users = useSelector((user) => user.loginSlice.login);
@@ -132,6 +135,37 @@ const ChatBox = () => {
     }
   };
 
+  // Send record audio file
+  const addAudioElement = (blob) => {
+    const url = URL.createObjectURL(blob);
+    setAudioRec(false);
+    if (activeSingleChat?.status == "single") {
+      if (url !== null) {
+        uploadBytes(
+          storageRef(storage, "singleMsgAudio/" + uuidv4()),
+          url
+        ).then((snap) => {
+          getDownloadURL(storageRef(storage, snap.metadata.fullPath))
+            .then((urls) => {
+              set(push(ref(db, "singleChat")), {
+                chatSend: users.uid,
+                chatReceive: activeSingleChat.userID,
+                recMsg: urls,
+                time: `${new Date()}`,
+              }).then(() => {
+                setAudioRec(false);
+              });
+            })
+            .catch((error) => {
+              console.log(error.code);
+            });
+        });
+      }
+    } else {
+      console.log("for group msg");
+    }
+  };
+
   // Read msg from database
   useEffect(() => {
     onValue(ref(db, "singleChat/"), (snapshot) => {
@@ -150,19 +184,29 @@ const ChatBox = () => {
     });
   }, [activeSingleChat]);
 
+  // Read online users
+  useEffect(() => {
+    onValue(ref(db, "online/"), (snap) => {
+      let online = [];
+      snap.forEach((item) => {
+        online.push(item.key);
+      });
+      setOnlineUser(online);
+    });
+  }, []);
+
   // Speed icons
   const speedIcon = [
     {
       icon: (
         <>
           <label>
-            {/* onClick={() => SetModalGall(true)} */}
             <GrGallery />
             <input
               hidden
               onChange={handleGalleryInput}
               type="file"
-              accept="image/*"
+              accept="image/*,  video/*"
             />
           </label>
         </>
@@ -173,7 +217,10 @@ const ChatBox = () => {
       icon: <BsCamera onClick={() => setCamOpen(true)} />,
       name: "Camera",
     },
-    { icon: <AiOutlineAudio />, name: "Audio" },
+    {
+      icon: <AiOutlineAudio onClick={() => setAudioRec(true)} />,
+      name: "Audio",
+    },
   ];
 
   return (
@@ -190,7 +237,10 @@ const ChatBox = () => {
           <div className="chat-header-wrapper">
             <div className="header_info">
               <div className="head-picture">
-                <div className="status"></div>
+                {onlineUser.includes(activeSingleChat.userID) && (
+                  <div className="status"></div>
+                )}
+
                 <div className="user_pic_70">
                   <picture>
                     <img
@@ -202,7 +252,11 @@ const ChatBox = () => {
               </div>
               <div className="user_info">
                 <div className="name">{activeSingleChat?.username}</div>
-                <div className="sub_name">Online</div>
+                <div className="sub_name">
+                  {onlineUser.includes(activeSingleChat.userID)
+                    ? "Online"
+                    : "Offline"}
+                </div>
               </div>
             </div>
             <div className="header_option">
@@ -244,8 +298,24 @@ const ChatBox = () => {
                           {moment(item?.time).fromNow()}
                         </div>
                       </div>
+                    ) : item?.recMsg ? (
+                      <div className="massage w-50 left">
+                        <div className="msg">
+                          <div className="audio">
+                            <audio
+                              // autoPlay
+                              // loop
+                              controls>
+                              <source src={item.recMsg} type="audio/*" />
+                            </audio>
+                          </div>
+                        </div>
+                        <div className="time">
+                          {moment(item?.time).fromNow()}
+                        </div>
+                      </div>
                     ) : (
-                      "videoMsg"
+                      "VedoMsg"
                     )
                   ) : item?.msg ? (
                     <>
@@ -270,6 +340,20 @@ const ChatBox = () => {
                               showRotate="true"
                             />
                           </picture>
+                        </div>
+                      </div>
+                      <div className="time">{moment(item?.time).fromNow()}</div>
+                    </div>
+                  ) : item?.recMsg ? (
+                    <div className="massage w-50 right">
+                      <div className="msg">
+                        <div className="audio">
+                          <audio
+                            // autoPlay
+                            // loop
+                            controls>
+                            <source src={item.recMsg} type="audio/*" />
+                          </audio>
                         </div>
                       </div>
                       <div className="time">{moment(item?.time).fromNow()}</div>
@@ -400,6 +484,17 @@ const ChatBox = () => {
                   onKeyUp={handleEnterPress}
                   onChange={(e) => setMsgSend(e.target.value)}
                 />
+                {audioRec && (
+                  <AudioRecorder
+                    onRecordingComplete={addAudioElement}
+                    audioTrackConstraints={{
+                      noiseSuppression: true,
+                      echoCancellation: true,
+                    }}
+                    showVisualizer={true}
+                    downloadFileExtension="mp3"
+                  />
+                )}
               </div>
               <div className="input-btn">
                 <IconButton onClick={handleSubmit}>

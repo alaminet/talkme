@@ -20,8 +20,10 @@ import { logIn } from "../../validation/Validation";
 import { useDispatch } from "react-redux";
 import { Loginuser } from "../../features/Slice/UserSlice";
 import "./style.css";
+import { getDatabase, ref, set } from "firebase/database";
 
 const Login = () => {
+  const db = getDatabase();
   const auth = getAuth();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -59,6 +61,9 @@ const Login = () => {
           if (auth.currentUser.emailVerified === true) {
             dispatch(Loginuser(user));
             localStorage.setItem("users", JSON.stringify(user));
+            set(ref(db, "online/" + user.uid), {
+              username: user.displayName,
+            });
           } else {
             toast.warn("Please verify your Email", {
               position: "bottom-center",

@@ -152,6 +152,19 @@ ol {
   border-color: var(--color-primary) !important;
 }
 
+.status {
+  content: "";
+  position: absolute;
+  border: 2px solid white;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: rgb(162, 255, 22);
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+}
+
 /* CSS for Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;

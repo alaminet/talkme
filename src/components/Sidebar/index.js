@@ -9,8 +9,10 @@ import { getAuth, signOut } from "firebase/auth";
 import { Loginuser } from "../../features/Slice/UserSlice";
 import Profilemodal from "../Modals/Profilemodal";
 import { useState } from "react";
+import { getDatabase, ref, remove } from "firebase/database";
 
 const Sidebar = () => {
+  const db = getDatabase();
   const auth = getAuth();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -24,6 +26,7 @@ const Sidebar = () => {
   const handleLogut = () => {
     signOut(auth)
       .then(() => {
+        remove(ref(db, "online/" + users.uid));
         localStorage.removeItem("users");
         dispatch(Loginuser(null));
         navigate("/");
