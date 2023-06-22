@@ -40,6 +40,8 @@ const ChatBox = () => {
   const [audioRec, setAudioRec] = useState(false);
   const [msgSend, setMsgSend] = useState("");
   const [textMsg, setTextMsg] = useState([]);
+  const [audioUrl, setAudioUrl] = useState("");
+  const [blob, setBlob] = useState("");
   const [onlineUser, setOnlineUser] = useState([]);
   const [capter, setCapter] = useState(null);
   const [modalOpen, SetModalOpen] = useState(false);
@@ -66,8 +68,8 @@ const ChatBox = () => {
           getDownloadURL(storageRef(storage, snapshot.metadata.fullPath)).then(
             (url) => {
               set(push(ref(db, "singleChat")), {
-                chatSend: users.uid,
-                chatReceive: activeSingleChat.userID,
+                chatSend: users?.uid,
+                chatReceive: activeSingleChat?.userID,
                 picMsg: url,
                 time: `${new Date()}`,
               });
@@ -91,7 +93,7 @@ const ChatBox = () => {
       if (msgSend !== "") {
         set(push(ref(db, "singleChat")), {
           chatSend: users.uid,
-          chatReceive: activeSingleChat.userID,
+          chatReceive: activeSingleChat?.userID,
           msg: msgSend,
           time: `${new Date()}`,
         }).then(() => {
@@ -117,8 +119,8 @@ const ChatBox = () => {
           getDownloadURL(storageRef(storage, snapshot.metadata.fullPath))
             .then((url) => {
               set(push(ref(db, "singleChat")), {
-                chatSend: users.uid,
-                chatReceive: activeSingleChat.userID,
+                chatSend: users?.uid,
+                chatReceive: activeSingleChat?.userID,
                 picMsg: url,
                 time: `${new Date()}`,
               }).then(() => {
@@ -138,33 +140,55 @@ const ChatBox = () => {
   // Send record audio file
   const addAudioElement = (blob) => {
     const url = URL.createObjectURL(blob);
-    setAudioRec(false);
-    if (activeSingleChat?.status == "single") {
-      if (url !== null) {
-        uploadBytes(
-          storageRef(storage, "singleMsgAudio/" + uuidv4()),
-          url
-        ).then((snap) => {
-          getDownloadURL(storageRef(storage, snap.metadata.fullPath))
-            .then((urls) => {
-              set(push(ref(db, "singleChat")), {
-                chatSend: users.uid,
-                chatReceive: activeSingleChat.userID,
-                recMsg: urls,
-                time: `${new Date()}`,
-              }).then(() => {
-                setAudioRec(false);
-              });
-            })
-            .catch((error) => {
-              console.log(error.code);
-            });
-        });
-      }
-    } else {
-      console.log("for group msg");
-    }
+    setAudioUrl(url);
+    setBlob(blob);
   };
+
+  const handleAudioUpload = () => {
+    const audioStgRef = storageRef(storage, audioUrl);
+    uploadBytes(audioStgRef, blob).then(() => {
+      getDownloadURL(audioStgRef).then((downloadURL) => {
+        set(push(ref(db, "singleChat")), {
+          chatSend: users?.uid,
+          chatReceive: activeSingleChat?.userID,
+          recMsg: downloadURL,
+          time: `${new Date()}`,
+        });
+      });
+    });
+  };
+
+  // const addAudioElement = (blob) => {
+  //   const url = URL.createObjectURL(blob);
+  //   setAudioRec(false);
+  //   if (activeSingleChat?.status == "single") {
+  //     if (url !== null) {
+  //       console.log(url);
+  //       uploadBytes(
+  //         storageRef(storage, "singleMsgAudio/" + uuidv4()),
+  //         url,
+  //         blob
+  //       ).then((snap) => {
+  //         getDownloadURL(storageRef(storage, snap.metadata.fullPath))
+  //           .then((urls) => {
+  //             set(push(ref(db, "singleChat")), {
+  //               chatSend: users?.uid,
+  //               chatReceive: activeSingleChat?.userID,
+  //               recMsg: urls,
+  //               time: `${new Date()}`,
+  //             }).then(() => {
+  //               setAudioRec(false);
+  //             });
+  //           })
+  //           .catch((error) => {
+  //             console.log(error.code);
+  //           });
+  //       });
+  //     }
+  //   } else {
+  //     console.log("for group msg");
+  //   }
+  // };
 
   // Read msg from database
   useEffect(() => {
@@ -172,10 +196,10 @@ const ChatBox = () => {
       let singleMsgArr = [];
       snapshot.forEach((item) => {
         if (
-          (item.val().chatSend == users.uid &&
+          (item.val().chatSend == users?.uid &&
             item.val().chatReceive == activeSingleChat?.userID) ||
           (item.val().chatSend == activeSingleChat?.userID &&
-            item.val().chatReceive == users.uid)
+            item.val().chatReceive == users?.uid)
         ) {
           singleMsgArr.push({ ...item.val(), msgID: item.key });
         }
@@ -237,7 +261,7 @@ const ChatBox = () => {
           <div className="chat-header-wrapper">
             <div className="header_info">
               <div className="head-picture">
-                {onlineUser.includes(activeSingleChat.userID) && (
+                {onlineUser.includes(activeSingleChat?.userID) && (
                   <div className="status"></div>
                 )}
 
@@ -253,7 +277,7 @@ const ChatBox = () => {
               <div className="user_info">
                 <div className="name">{activeSingleChat?.username}</div>
                 <div className="sub_name">
-                  {onlineUser.includes(activeSingleChat.userID)
+                  {onlineUser.includes(activeSingleChat?.userID)
                     ? "Online"
                     : "Offline"}
                 </div>
@@ -268,7 +292,7 @@ const ChatBox = () => {
           <div className="chat-body-wrapper">
             {activeSingleChat?.status == "single"
               ? textMsg?.map((item, i) =>
-                  item.chatSend == activeSingleChat.userID ? (
+                  item.chatSend == activeSingleChat?.userID ? (
                     item?.msg ? (
                       <>
                         <div key={i} className="massage w-50 left">
@@ -302,12 +326,7 @@ const ChatBox = () => {
                       <div className="massage w-50 left">
                         <div className="msg">
                           <div className="audio">
-                            <audio
-                              // autoPlay
-                              // loop
-                              controls>
-                              <source src={item.recMsg} type="audio/*" />
-                            </audio>
+                            <audio controls src={item?.recMsg}></audio>
                           </div>
                         </div>
                         <div className="time">
@@ -348,12 +367,7 @@ const ChatBox = () => {
                     <div className="massage w-50 right">
                       <div className="msg">
                         <div className="audio">
-                          <audio
-                            // autoPlay
-                            // loop
-                            controls>
-                            <source src={item.recMsg} type="audio/*" />
-                          </audio>
+                          <audio controls src={item?.recMsg}></audio>
                         </div>
                       </div>
                       <div className="time">{moment(item?.time).fromNow()}</div>
@@ -497,7 +511,8 @@ const ChatBox = () => {
                 )}
               </div>
               <div className="input-btn">
-                <IconButton onClick={handleSubmit}>
+                <IconButton
+                  onClick={audioUrl ? handleAudioUpload : handleSubmit}>
                   <IoMdSend />
                 </IconButton>
               </div>
