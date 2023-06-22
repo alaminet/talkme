@@ -41,7 +41,7 @@ const ChatBox = () => {
   const [msgSend, setMsgSend] = useState("");
   const [textMsg, setTextMsg] = useState([]);
   const [audioUrl, setAudioUrl] = useState("");
-  const [blob, setBlob] = useState("");
+  const [blobs, setBlob] = useState("");
   const [onlineUser, setOnlineUser] = useState([]);
   const [capter, setCapter] = useState(null);
   const [modalOpen, SetModalOpen] = useState(false);
@@ -146,7 +146,7 @@ const ChatBox = () => {
 
   const handleAudioUpload = () => {
     const audioStgRef = storageRef(storage, audioUrl);
-    uploadBytes(audioStgRef, blob).then(() => {
+    uploadBytes(audioStgRef, blobs).then(() => {
       getDownloadURL(audioStgRef).then((downloadURL) => {
         set(push(ref(db, "singleChat")), {
           chatSend: users?.uid,
@@ -155,36 +155,32 @@ const ChatBox = () => {
           time: `${new Date()}`,
         });
       });
+      setAudioRec(false);
     });
   };
 
   // const addAudioElement = (blob) => {
   //   const url = URL.createObjectURL(blob);
-  //   setAudioRec(false);
+  //   setAudioUrl(url);
+  //   setBlob(blob);
   //   if (activeSingleChat?.status == "single") {
-  //     if (url !== null) {
-  //       console.log(url);
-  //       uploadBytes(
-  //         storageRef(storage, "singleMsgAudio/" + uuidv4()),
-  //         url,
-  //         blob
-  //       ).then((snap) => {
-  //         getDownloadURL(storageRef(storage, snap.metadata.fullPath))
-  //           .then((urls) => {
-  //             set(push(ref(db, "singleChat")), {
-  //               chatSend: users?.uid,
-  //               chatReceive: activeSingleChat?.userID,
-  //               recMsg: urls,
-  //               time: `${new Date()}`,
-  //             }).then(() => {
-  //               setAudioRec(false);
-  //             });
-  //           })
-  //           .catch((error) => {
-  //             console.log(error.code);
+  //     const audioStgRef = storageRef(storage, audioUrl);
+  //     uploadBytes(audioStgRef, blob).then(() => {
+  //       getDownloadURL(audioStgRef)
+  //         .then((downloadURL) => {
+  //           set(push(ref(db, "singleChat")), {
+  //             chatSend: users?.uid,
+  //             chatReceive: activeSingleChat?.userID,
+  //             recMsg: downloadURL,
+  //             time: `${new Date()}`,
+  //           }).then(() => {
+  //             setAudioRec(false);
   //           });
-  //       });
-  //     }
+  //         })
+  //         .catch((error) => {
+  //           console.log(error.code);
+  //         });
+  //     });
   //   } else {
   //     console.log("for group msg");
   //   }
