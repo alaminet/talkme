@@ -12,16 +12,18 @@ import {
   remove,
   set,
 } from "firebase/database";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   getStorage,
   ref as storageRef,
   getDownloadURL,
 } from "firebase/storage";
+import { ActiveSingle } from "../../features/Slice/ActiveSignleSlice";
 
 const MsgGroup = () => {
   const db = getDatabase();
   const storage = getStorage();
+  const dispatch = useDispatch();
   const [grouplist, setGrouplist] = useState([]);
   const [userlist, setUserlist] = useState([]);
   const [memberlist, setMemberlist] = useState([]);
@@ -47,14 +49,16 @@ const MsgGroup = () => {
           });
       });
     });
-  }, [db]);
+  }, []);
 
   // Get Group members from database
   useEffect(() => {
     onValue(ref(db, "groupmembers"), (snap) => {
       let memberArr = [];
       snap.forEach((item) => {
-        memberArr.push(item.val().memberID);
+        if (item.val().memberID === users.uid) {
+          memberArr.push(item.val().grpID);
+        }
       });
       setMemberlist(memberArr);
     });
@@ -67,15 +71,32 @@ const MsgGroup = () => {
       let grpArr = [];
       snap.forEach((item) => {
         let user = userlist.find((u) => u?.userID === item.val().groupAdmin);
-        grpArr.push({
-          ...item.val(),
-          grpID: item.key,
-          adminName: user?.username,
-        });
+        if (
+          memberlist.includes(item.key) ||
+          item.val().groupAdmin === users.uid
+        ) {
+          grpArr.push({
+            ...item.val(),
+            grpID: item.key,
+            adminName: user?.username,
+          });
+        }
       });
       setGrouplist(grpArr);
     });
-  }, [db]);
+  }, [userlist, memberlist]);
+
+  // Active Group slice
+  const handleGroup = (item) => {
+    dispatch(
+      ActiveSingle({
+        status: "group",
+        userID: item.grpID,
+        username: item.groupName,
+        userPic: item.groupTag,
+      })
+    );
+  };
 
   return (
     <>
@@ -94,7 +115,10 @@ const MsgGroup = () => {
         </div>
         <div className="card_body">
           {grouplist.map((item, i) => (
-            <div key={i} className="body_list">
+            <div
+              key={i}
+              className="body_list"
+              onClick={() => handleGroup(item)}>
               <div className="user_pic_70">
                 <picture>
                   <img

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./style.css";
 import { Grid, IconButton } from "@mui/material";
 import Modal from "@mui/material/Modal";
@@ -36,6 +36,7 @@ import { AudioRecorder } from "react-audio-voice-recorder";
 const ChatBox = () => {
   const db = getDatabase();
   const storage = getStorage();
+  const scrollMsg = useRef(null);
   const [camOpen, setCamOpen] = useState(false);
   const [audioRec, setAudioRec] = useState(false);
   const [msgSend, setMsgSend] = useState("");
@@ -215,6 +216,11 @@ const ChatBox = () => {
     });
   }, []);
 
+  // Scroll Message
+  useEffect(() => {
+    scrollMsg.current?.scrollIntoView({ behavior: "smooth" });
+  }, [textMsg]);
+
   // Speed icons
   const speedIcon = [
     {
@@ -287,11 +293,55 @@ const ChatBox = () => {
         <Grid item className="chat-body">
           <div className="chat-body-wrapper">
             {activeSingleChat?.status == "single"
-              ? textMsg?.map((item, i) =>
-                  item.chatSend == activeSingleChat?.userID ? (
-                    item?.msg ? (
+              ? textMsg?.map((item, i) => (
+                  <div key={i} ref={scrollMsg}>
+                    {item.chatSend == activeSingleChat?.userID ? (
+                      item?.msg ? (
+                        <>
+                          <div className="massage w-50 left">
+                            <div className="msg">
+                              <div className="text">{item?.msg}</div>
+                            </div>
+                            <div className="time">
+                              {moment(item?.time).fromNow()}
+                            </div>
+                          </div>
+                        </>
+                      ) : item?.picMsg ? (
+                        <div className="massage w-50 left">
+                          <div className="msg">
+                            <div className="picture">
+                              <picture>
+                                <ModalImage
+                                  small={item?.picMsg}
+                                  medium={item?.picMsg}
+                                  alt=""
+                                  showRotate="true"
+                                />
+                              </picture>
+                            </div>
+                          </div>
+                          <div className="time">
+                            {moment(item?.time).fromNow()}
+                          </div>
+                        </div>
+                      ) : item?.recMsg ? (
+                        <div className="massage w-50 left">
+                          <div className="msg">
+                            <div className="audio">
+                              <audio controls src={item?.recMsg}></audio>
+                            </div>
+                          </div>
+                          <div className="time">
+                            {moment(item?.time).fromNow()}
+                          </div>
+                        </div>
+                      ) : (
+                        "VedoMsg"
+                      )
+                    ) : item?.msg ? (
                       <>
-                        <div key={i} className="massage w-50 left">
+                        <div className="massage w-50 right">
                           <div className="msg">
                             <div className="text">{item?.msg}</div>
                           </div>
@@ -301,7 +351,7 @@ const ChatBox = () => {
                         </div>
                       </>
                     ) : item?.picMsg ? (
-                      <div className="massage w-50 left">
+                      <div className="massage w-50 right">
                         <div className="msg">
                           <div className="picture">
                             <picture>
@@ -319,7 +369,7 @@ const ChatBox = () => {
                         </div>
                       </div>
                     ) : item?.recMsg ? (
-                      <div className="massage w-50 left">
+                      <div className="massage w-50 right">
                         <div className="msg">
                           <div className="audio">
                             <audio controls src={item?.recMsg}></audio>
@@ -330,48 +380,10 @@ const ChatBox = () => {
                         </div>
                       </div>
                     ) : (
-                      "VedoMsg"
-                    )
-                  ) : item?.msg ? (
-                    <>
-                      <div className="massage w-50 right">
-                        <div className="msg">
-                          <div className="text">{item?.msg}</div>
-                        </div>
-                        <div className="time">
-                          {moment(item?.time).fromNow()}
-                        </div>
-                      </div>
-                    </>
-                  ) : item?.picMsg ? (
-                    <div className="massage w-50 right">
-                      <div className="msg">
-                        <div className="picture">
-                          <picture>
-                            <ModalImage
-                              small={item?.picMsg}
-                              medium={item?.picMsg}
-                              alt=""
-                              showRotate="true"
-                            />
-                          </picture>
-                        </div>
-                      </div>
-                      <div className="time">{moment(item?.time).fromNow()}</div>
-                    </div>
-                  ) : item?.recMsg ? (
-                    <div className="massage w-50 right">
-                      <div className="msg">
-                        <div className="audio">
-                          <audio controls src={item?.recMsg}></audio>
-                        </div>
-                      </div>
-                      <div className="time">{moment(item?.time).fromNow()}</div>
-                    </div>
-                  ) : (
-                    "videoMsg"
-                  )
-                )
+                      "videoMsg"
+                    )}
+                  </div>
+                ))
               : "Group msg"}
             {/* text message */}
             {/* <div className="massage w-50 left">
