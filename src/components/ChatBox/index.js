@@ -37,10 +37,13 @@ const ChatBox = () => {
   const db = getDatabase();
   const storage = getStorage();
   const scrollMsg = useRef(null);
+  const [userlist, setUserlist] = useState([]);
   const [camOpen, setCamOpen] = useState(false);
   const [audioRec, setAudioRec] = useState(false);
   const [msgSend, setMsgSend] = useState("");
+  const [grpmsgSend, setGrpMsgSend] = useState("");
   const [textMsg, setTextMsg] = useState([]);
+  const [grpMsg, setGrpMsg] = useState([]);
   const [audioUrl, setAudioUrl] = useState("");
   const [blobs, setBlob] = useState("");
   const [onlineUser, setOnlineUser] = useState([]);
@@ -51,6 +54,26 @@ const ChatBox = () => {
     (state) => state.activeSlice.activeSingle
   );
   const defaultProfile = "./images/avatar_boy_cap.png";
+
+  // user list from firebase
+  useEffect(() => {
+    const userCountRef = ref(db, "users/");
+    onValue(userCountRef, (snap) => {
+      let userArr = [];
+      snap.forEach((item) => {
+        getDownloadURL(storageRef(storage, "userpic/" + item.key))
+          .then((url) => {
+            userArr.push({ ...item.val(), userID: item.key, userPic: url });
+          })
+          .catch((error) => {
+            userArr.push({ ...item.val(), userID: item.key, userPic: null });
+          })
+          .then(() => {
+            setUserlist([...userArr]);
+          });
+      });
+    });
+  }, []);
 
   // take photos from camera
   function handleTakePhoto(dataUri) {
@@ -80,8 +103,28 @@ const ChatBox = () => {
         .catch((error) => {
           console.log(error.code);
         });
+    } else if (activeSingleChat?.status == "group") {
+      uploadBytes(
+        storageRef(storage, "groupMsgPic/" + uuidv4()),
+        e.target.files[0]
+      )
+        .then((snapshot) => {
+          getDownloadURL(storageRef(storage, snapshot.metadata.fullPath)).then(
+            (url) => {
+              set(push(ref(db, "groupChat")), {
+                chatSend: users?.uid,
+                chatReceive: activeSingleChat?.userID,
+                picMsg: url,
+                time: `${new Date()}`,
+              });
+            }
+          );
+        })
+        .catch((error) => {
+          console.log(error.code);
+        });
     } else {
-      console.log("for group msg");
+      console.log("No Chat head");
     }
   };
 
@@ -101,8 +144,19 @@ const ChatBox = () => {
           setMsgSend("");
         });
       }
+    } else if (activeSingleChat?.status == "group") {
+      if (msgSend !== "") {
+        set(push(ref(db, "groupChat")), {
+          chatSend: users.uid,
+          chatReceive: activeSingleChat?.userID,
+          msg: grpmsgSend,
+          time: `${new Date()}`,
+        }).then(() => {
+          setGrpMsgSend("");
+        });
+      }
     } else {
-      console.log("for group msg");
+      console.log("No Chat Head");
     }
   };
 
@@ -133,8 +187,31 @@ const ChatBox = () => {
             });
         });
       }
-    } else {
-      console.log("for group msg");
+    } else if (activeSingleChat?.status == "group") {
+      if (capter !== null) {
+        uploadString(
+          storageRef(storage, "groupMsgPic/" + uuidv4()),
+          capter,
+          "data_url"
+        ).then((snapshot) => {
+          SetModalOpen(false);
+          setCamOpen(false);
+          getDownloadURL(storageRef(storage, snapshot.metadata.fullPath))
+            .then((url) => {
+              set(push(ref(db, "groupChat")), {
+                chatSend: users?.uid,
+                chatReceive: activeSingleChat?.userID,
+                picMsg: url,
+                time: `${new Date()}`,
+              }).then(() => {
+                setCapter(null);
+              });
+            })
+            .catch((error) => {
+              console.log(error.code);
+            });
+        });
+      }
     }
   };
 
@@ -149,12 +226,21 @@ const ChatBox = () => {
     const audioStgRef = storageRef(storage, audioUrl);
     uploadBytes(audioStgRef, blobs).then(() => {
       getDownloadURL(audioStgRef).then((downloadURL) => {
-        set(push(ref(db, "singleChat")), {
-          chatSend: users?.uid,
-          chatReceive: activeSingleChat?.userID,
-          recMsg: downloadURL,
-          time: `${new Date()}`,
-        });
+        if (activeSingleChat?.status == "single") {
+          set(push(ref(db, "singleChat")), {
+            chatSend: users?.uid,
+            chatReceive: activeSingleChat?.userID,
+            recMsg: downloadURL,
+            time: `${new Date()}`,
+          });
+        } else if (activeSingleChat?.status == "group") {
+          set(push(ref(db, "groupChat")), {
+            chatSend: users?.uid,
+            chatReceive: activeSingleChat?.userID,
+            recMsg: downloadURL,
+            time: `${new Date()}`,
+          });
+        }
       });
       setAudioRec(false);
     });
@@ -187,7 +273,7 @@ const ChatBox = () => {
   //   }
   // };
 
-  // Read msg from database
+  // Read Signle chat from database
   useEffect(() => {
     onValue(ref(db, "singleChat/"), (snapshot) => {
       let singleMsgArr = [];
@@ -201,6 +287,24 @@ const ChatBox = () => {
           singleMsgArr.push({ ...item.val(), msgID: item.key });
         }
         setTextMsg(singleMsgArr);
+      });
+    });
+  }, [activeSingleChat]);
+
+  // Read Group chat from database
+  useEffect(() => {
+    onValue(ref(db, "groupChat/"), (snapshot) => {
+      let groupMsgArr = [];
+      snapshot.forEach((item) => {
+        let user = userlist.find((u) => u?.userID === item.val().chatSend);
+        if (item.val().chatReceive == activeSingleChat?.userID) {
+          groupMsgArr.push({
+            ...item.val(),
+            msgID: item.key,
+            username: user?.username,
+          });
+        }
+        setGrpMsg(groupMsgArr);
       });
     });
   }, [activeSingleChat]);
@@ -232,7 +336,7 @@ const ChatBox = () => {
               hidden
               onChange={handleGalleryInput}
               type="file"
-              accept="image/*,  video/*"
+              accept="image/*"
             />
           </label>
         </>
@@ -279,9 +383,11 @@ const ChatBox = () => {
               <div className="user_info">
                 <div className="name">{activeSingleChat?.username}</div>
                 <div className="sub_name">
-                  {onlineUser.includes(activeSingleChat?.userID)
-                    ? "Online"
-                    : "Offline"}
+                  {activeSingleChat?.status == "single"
+                    ? onlineUser.includes(activeSingleChat?.userID)
+                      ? "Online"
+                      : "Offline"
+                    : activeSingleChat?.status}
                 </div>
               </div>
             </div>
@@ -384,7 +490,105 @@ const ChatBox = () => {
                     )}
                   </div>
                 ))
-              : "Group msg"}
+              : activeSingleChat?.status == "group"
+              ? grpMsg?.map((item, i) => (
+                  <div key={i} ref={scrollMsg}>
+                    {item.chatSend == users?.uid ? (
+                      item?.msg ? (
+                        <>
+                          <div className="massage w-50 right">
+                            <div className="msg">
+                              <div className="text">{item?.msg}</div>
+                            </div>
+                            <div className="time">
+                              {moment(item?.time).fromNow()}
+                            </div>
+                          </div>
+                        </>
+                      ) : item?.picMsg ? (
+                        <div className="massage w-50 right">
+                          <div className="msg">
+                            <div className="picture">
+                              <picture>
+                                <ModalImage
+                                  small={item?.picMsg}
+                                  medium={item?.picMsg}
+                                  alt=""
+                                  showRotate="true"
+                                />
+                              </picture>
+                            </div>
+                          </div>
+                          <div className="time">
+                            {moment(item?.time).fromNow()}
+                          </div>
+                        </div>
+                      ) : item?.recMsg ? (
+                        <div className="massage w-50 right">
+                          <div className="msg">
+                            <div className="audio">
+                              <audio controls src={item?.recMsg}></audio>
+                            </div>
+                          </div>
+                          <div className="time">
+                            {moment(item?.time).fromNow()}
+                          </div>
+                        </div>
+                      ) : (
+                        "VedoMsg"
+                      )
+                    ) : item?.msg ? (
+                      <>
+                        <div className="massage w-50 left">
+                          <div className="msg">
+                            <div className="text">{item?.msg}</div>
+                          </div>
+                          <div className="time">
+                            {moment(item?.time).fromNow() +
+                              " by " +
+                              item?.username}
+                          </div>
+                        </div>
+                      </>
+                    ) : item?.picMsg ? (
+                      <div className="massage w-50 left">
+                        <div className="msg">
+                          <div className="picture">
+                            <picture>
+                              <ModalImage
+                                small={item?.picMsg}
+                                medium={item?.picMsg}
+                                alt=""
+                                showRotate="true"
+                              />
+                            </picture>
+                          </div>
+                        </div>
+                        <div className="time">
+                          {moment(item?.time).fromNow() +
+                            " by " +
+                            item?.username}
+                        </div>
+                      </div>
+                    ) : item?.recMsg ? (
+                      <div className="massage w-50 left">
+                        <div className="msg">
+                          <div className="audio">
+                            <audio controls src={item?.recMsg}></audio>
+                          </div>
+                        </div>
+                        <div className="time">
+                          {moment(item?.time).fromNow() +
+                            " by " +
+                            item?.username}
+                        </div>
+                      </div>
+                    ) : (
+                      "videoMsg"
+                    )}
+                  </div>
+                ))
+              : "Empty msg"}
             {/* text message */}
             {/* <div className="massage w-50 left">
               <div className="msg">
@@ -499,13 +703,24 @@ const ChatBox = () => {
           <div className="input-wrapper">
             <div className="input-form">
               <div className="input-field">
-                <input
-                  type="text"
-                  placeholder="messages"
-                  value={msgSend}
-                  onKeyUp={handleEnterPress}
-                  onChange={(e) => setMsgSend(e.target.value)}
-                />
+                {activeSingleChat?.status == "single" ? (
+                  <input
+                    type="text"
+                    placeholder="messages"
+                    value={msgSend}
+                    onKeyUp={handleEnterPress}
+                    onChange={(e) => setMsgSend(e.target.value)}
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    placeholder="messages"
+                    value={grpmsgSend}
+                    onKeyUp={handleEnterPress}
+                    onChange={(e) => setGrpMsgSend(e.target.value)}
+                  />
+                )}
+
                 {audioRec && (
                   <AudioRecorder
                     onRecordingComplete={addAudioElement}

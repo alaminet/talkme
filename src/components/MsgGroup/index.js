@@ -93,7 +93,7 @@ const MsgGroup = () => {
         status: "group",
         userID: item.grpID,
         username: item.groupName,
-        userPic: item.groupTag,
+        userPic: null,
       })
     );
   };
