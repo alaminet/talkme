@@ -19,7 +19,7 @@ const Sidemenu = () => {
         <NavLink to="/notification">
           <RiNotification3Fill />
         </NavLink>
-        <NavLink to="/setting">
+        <NavLink to="/settings">
           <AiFillSetting />
         </NavLink>
       </div>

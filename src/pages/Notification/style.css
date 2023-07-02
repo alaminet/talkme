@@ -1,0 +1,11 @@
+.css-1ex1afd-MuiTableCell-root {
+  display: flex !important;
+  align-items: center;
+  gap: 4px;
+}
+
+.noti-time {
+  font-size: 12px;
+  margin-left: 10px;
+  color: var(--color-black-50);
+}

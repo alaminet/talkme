@@ -76,27 +76,45 @@ const FriendRequest = () => {
       senderID: item.id,
       receiverID: users.uid,
     }).then(() => {
-      remove(ref(db, "friendrequest/" + item.reqID)).then(() => {
-        toast.success("Friend Accept...!", {
+      remove(ref(db, "friendrequest/" + item.reqID))
+        .then(() => {
+          set(push(ref(db, "notification/")), {
+            senderID: users?.uid,
+            receiverID: item?.id,
+            notice: "now Friends",
+            time: `${new Date()}`,
+          });
+        })
+        .then(() => {
+          toast.success("Friend Accept...!", {
+            position: "bottom-center",
+            autoClose: 1000,
+            pauseOnHover: false,
+            theme: "light",
+          });
+        });
+    });
+  };
+
+  // Cancel Friend Request
+  const handleCancelReq = (item) => {
+    remove(ref(db, "friendrequest/" + item.reqID))
+      .then(() => {
+        set(push(ref(db, "notification/")), {
+          senderID: users?.uid,
+          receiverID: item?.id,
+          notice: "not accept",
+          time: `${new Date()}`,
+        });
+      })
+      .then(() => {
+        toast.warn("Cancel Request...!", {
           position: "bottom-center",
           autoClose: 1000,
           pauseOnHover: false,
           theme: "light",
         });
       });
-    });
-  };
-
-  // Cancel Friend Request
-  const handleCancelReq = (item) => {
-    remove(ref(db, "friendrequest/" + item.reqID)).then(() => {
-      toast.warn("Cancel Request...!", {
-        position: "bottom-center",
-        autoClose: 1000,
-        pauseOnHover: false,
-        theme: "light",
-      });
-    });
   };
   return (
     <>

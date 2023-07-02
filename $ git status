@@ -1,0 +1,35 @@
+[33m6d98b5d[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m Group message functionality done
+[33m3aa4da5[m Scroll message option done
+[33m7a13ffa[m audio set for single msg
+[33m2c33308[m Audio chat functonality done
+[33m6898813[m Set online status on frindist & userlist
+[33m189ce6d[m Online User status fixe on chat box
+[33ma498810[m Capter img use device camera, Input image from gallery, enter key functionality on input filed
+[33m2205f2a[m Member request counter badge fixed
+[33mdc5b1ea[m Group Admin name issue solved..!
+[33m87ec8ff[m activesinglechat slice & store crate and set with chat head
+[33mf180b9a[m Chat box Camera Capter UI design done..
+[33m24e73e2[m React HTML camera option enable & speedDail positioning
+[33m92c6d33[m Chat input design done
+[33mcd659db[m chatbox input design running
+[33m5ff4191[m chatbox video UI design running
+[33mc798662[m chatbox text & image ui design done
+[33m2a122c3[m ChatBox section crated
+[33m2ce80c3[m GroupMsg environment crate on msg section
+[33mb353881[m msgGroup section setting
+[33md9b2f84[m Message environment create, msgFrind, msgGroup, crated
+[33ma386042[m Group member requestaccept option done and firebase database update
+[33m109956c[m Group member push option add & firebase database created
+[33m1091b47[m Group & Group request section rearrange
+[33mc25739f[m Revert "React tostify CSS add on main jsx"
+[33md6d33af[m React tostify CSS add on main jsx
+[33mbd6d63d[m Fix the member request list on the my groups
+[33m290862f[m group member & group list data updated by useeffect
+[33me0996b4[m Group Member removed functionality
+[33mf91c48e[m member list showed
+[33me2ae852[m group member request counter badge added, fix no pending member message
+[33m5b22fa5[m Member request accept functionality
+[33m32f48d5[m Member reuest listing with details information
+[33m4bab54a[m Group join functionality, Button behavior, Cancel req.
+[33m6372970[m Home/My Groups member request option enabled
+[33ma21ff06[m This is first commit for Talkme react app

@@ -17,6 +17,7 @@ import {
   getStorage,
   ref as storageRef,
 } from "firebase/storage";
+import moment from "moment/moment";
 
 const Blockuser = () => {
   const db = getDatabase();
@@ -85,11 +86,18 @@ const Blockuser = () => {
         senderID: item.userID,
         receiverID: users.uid,
       }).then(() => {
-        toast.success(item.username + " Unblocked...!", {
-          position: "bottom-center",
-          autoClose: 1000,
-          pauseOnHover: false,
-          theme: "light",
+        set(push(ref(db, "notification/")), {
+          senderID: users.uid,
+          receiverID: item.userID,
+          notice: "Unblock",
+          time: `${new Date()}`,
+        }).then(() => {
+          toast.success(item.username + " Unblocked...!", {
+            position: "bottom-center",
+            autoClose: 1000,
+            pauseOnHover: false,
+            theme: "light",
+          });
         });
       });
     });

@@ -12,6 +12,8 @@ import Loggedinuser from "./Privaterouter/Loggedinuser";
 import Loggedoutuser from "./Privaterouter/Loggedoutuser";
 import Rootlayout from "./Rootlayout";
 import Messages from "./pages/Messages";
+import Notification from "./pages/Notification";
+import Settings from "./pages/Settings";
 
 function App() {
   const router = createBrowserRouter(
@@ -21,6 +23,8 @@ function App() {
           <Route element={<Rootlayout />}>
             <Route path="/" element={<Home />}></Route>
             <Route path="/messages" element={<Messages />}></Route>
+            <Route path="/notification" element={<Notification />}></Route>
+            <Route path="/settings" element={<Settings />}></Route>
           </Route>
         </Route>
         <Route element={<Loggedoutuser />}>

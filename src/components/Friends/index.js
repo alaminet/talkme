@@ -65,7 +65,7 @@ const Friends = () => {
         }
       });
     });
-  }, [db, frndlist]);
+  }, []);
 
   // Read online users
   useEffect(() => {
@@ -76,7 +76,7 @@ const Friends = () => {
       });
       setOnlineUser(online);
     });
-  }, [frndlist]);
+  }, []);
 
   // Get frind list from firebase
   useEffect(() => {
@@ -93,35 +93,53 @@ const Friends = () => {
       });
       setFrndlist(frndArr);
     });
-  }, []);
+  }, [userlist]);
 
   // Unfriend from frind list
   const handleUnfrnd = (item) => {
-    remove(ref(db, "friends/" + item.frndID)).then(() => {
-      toast.warn(item.username + " Unfriend...!", {
-        position: "bottom-center",
-        autoClose: 1000,
-        pauseOnHover: false,
-        theme: "light",
-      });
-    });
-  };
-
-  // Block from friend list
-  const handleblock = (item) => {
-    set(push(ref(db, "blocked")), {
-      blockedTo: item.userID,
-      blockedBy: users.uid,
-    }).then(() => {
-      remove(ref(db, "friends/" + item.frndID)).then(() => {
-        toast.warn(item.username + " Blocked...!", {
+    remove(ref(db, "friends/" + item.frndID))
+      .then(() => {
+        set(push(ref(db, "notification/")), {
+          senderID: users?.uid,
+          receiverID: item?.userID,
+          notice: "Unfriend",
+          time: `${new Date()}`,
+        });
+      })
+      .then(() => {
+        toast.warn(item.username + " Unfriend...!", {
           position: "bottom-center",
           autoClose: 1000,
           pauseOnHover: false,
           theme: "light",
         });
       });
-    });
+  };
+
+  // Block from friend list
+  const handleblock = (item) => {
+    set(push(ref(db, "blocked/")), {
+      blockedTo: item?.userID,
+      blockedBy: users?.uid,
+    })
+      .then(() => {
+        set(push(ref(db, "notification/")), {
+          senderID: users?.uid,
+          receiverID: item?.userID,
+          notice: "Blocked",
+          time: `${new Date()}`,
+        });
+      })
+      .then(() => {
+        remove(ref(db, "friends/" + item.frndID)).then(() => {
+          toast.warn(item.username + " Blocked...!", {
+            position: "bottom-center",
+            autoClose: 1000,
+            pauseOnHover: false,
+            theme: "light",
+          });
+        });
+      });
   };
 
   return (
