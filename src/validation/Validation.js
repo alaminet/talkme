@@ -13,3 +13,8 @@ export const logIn = Yup.object({
   userEmail: Yup.string().email().required("Please enter your Email"),
   userPass: Yup.string().min(5).max(15).required("Please enter your Password"),
 });
+
+export const updateProInfo = Yup.object({
+  userName: Yup.string().min(4).max(15).required("Please enter your User Name"),
+  userPass: Yup.string().min(5).max(15).required("Please enter your Password"),
+});

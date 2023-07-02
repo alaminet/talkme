@@ -6,13 +6,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button, TextField } from "@mui/material";
 import { useFormik } from "formik";
 import Profilemodal from "../../components/Modals/Profilemodal";
-import { getAuth, updateProfile } from "firebase/auth";
+import { getAuth, updatePassword, updateProfile } from "firebase/auth";
 import { getDatabase, ref, update } from "firebase/database";
 import { Loginuser } from "../../features/Slice/UserSlice";
+import { ToastContainer, toast } from "react-toastify";
+import { updateProInfo } from "../../validation/Validation";
 
 const Settings = () => {
   const db = getDatabase();
   const auth = getAuth();
+  const user = auth.currentUser;
   const dispatch = useDispatch();
   const users = useSelector((user) => user.loginSlice.login);
   const defaultProfile = "./images/avatar_boy_cap.png";
@@ -29,32 +32,55 @@ const Settings = () => {
 
   const formik = useFormik({
     initialValues: initialValues,
+    // validationSchema: updateProInfo,
     onSubmit: () => {
-      update(ref(db, "users/" + users.uid), {
-        username: formik.values.userName,
-      })
-        .then(() => {
-          dispatch(
-            Loginuser({ ...users, displayName: formik.values.userName })
-          );
-          localStorage.setItem(
-            "users",
-            JSON.stringify({ ...users, displayName: formik.values.userName })
-          );
-          updateProfile(auth.currentUser, {
-            displayName: formik.values.userName,
-          }).then(() => {
-            console.log(users);
-          });
+      if (formik.values.userName.length >= 5) {
+        update(ref(db, "users/" + users.uid), {
+          username: formik.values.userName,
         })
-        .catch((error) => {
-          console.log(error.code);
-        });
+          .then(() => {
+            dispatch(
+              Loginuser({ ...users, displayName: formik.values.userName })
+            );
+            localStorage.setItem(
+              "users",
+              JSON.stringify({ ...users, displayName: formik.values.userName })
+            );
+            updateProfile(auth.currentUser, {
+              displayName: formik.values.userName,
+            });
+          })
+          .then(() => {
+            toast.success("Username Updated", {
+              position: "bottom-center",
+              autoClose: 1000,
+              theme: "light",
+              pauseOnHover: false,
+            });
+          })
+          .catch((error) => {
+            console.log(error.code);
+          });
+      }
+      if (formik.values.userPass.length >= 5) {
+        updatePassword(auth.currentUser, formik.values.userPass)
+          .then(() => {
+            toast.success("Password Updated", {
+              position: "bottom-center",
+              autoClose: 1000,
+              theme: "light",
+              pauseOnHover: false,
+            });
+          })
+          .catch((error) => {
+            console.log(error.code);
+          });
+      }
     },
   });
-
   return (
     <>
+      <ToastContainer />
       <div className="setting-card">
         <Card sx={{ maxWidth: 275 }}>
           <div className="profile-pic" onClick={handleOpen}>
@@ -77,6 +103,7 @@ const Settings = () => {
                 label={users?.displayName}
                 variant="standard"
                 name="userName"
+                defaultValue={formik.values.userName}
                 value={formik.values.userName}
                 onChange={formik.handleChange}
                 helperText={
