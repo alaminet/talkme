@@ -145,7 +145,7 @@ const ChatBox = () => {
         });
       }
     } else if (activeSingleChat?.status == "group") {
-      if (msgSend !== "") {
+      if (grpmsgSend !== "") {
         set(push(ref(db, "groupChat")), {
           chatSend: users.uid,
           chatReceive: activeSingleChat?.userID,
