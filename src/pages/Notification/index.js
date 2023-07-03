@@ -77,7 +77,7 @@ const Notification = () => {
             <TableRow
               key={i}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-              <TableCell>
+              <TableCell className="table-cell">
                 <IoIosNotifications />
                 {item.notiFrom + " " + item.notice + " to you..!"}
                 <span className="noti-time">

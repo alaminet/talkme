@@ -25,10 +25,6 @@
   margin: 10px auto;
 }
 
-.css-g1sfbl {
-  padding: 15px;
-}
-
 .profile-pic img {
   width: 100%;
   height: 100%;
@@ -62,4 +58,5 @@
 
 .user-info {
   width: 100%;
+  padding: 15px;
 }

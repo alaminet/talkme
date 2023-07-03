@@ -82,7 +82,7 @@ const Settings = () => {
     <>
       <ToastContainer />
       <div className="setting-card">
-        <Card sx={{ maxWidth: 275 }}>
+        <Card className="pro-card" sx={{ maxWidth: 275 }}>
           <div className="profile-pic" onClick={handleOpen}>
             <picture>
               <img
