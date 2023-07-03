@@ -16,3 +16,7 @@
   font-weight: 400;
   font-family: var(--font-secondary);
 }
+
+.primary_btn.cancel {
+  text-wrap: nowrap;
+}

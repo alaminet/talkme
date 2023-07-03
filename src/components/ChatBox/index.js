@@ -355,7 +355,9 @@ const ChatBox = () => {
   return (
     <>
       {activeSingleChat === null ? (
-        <Alert severity="error">No chat slected..!</Alert>
+        <Alert className="no-chat" severity="error">
+          No chat slected..!
+        </Alert>
       ) : (
         <>
           <Grid
@@ -782,7 +784,10 @@ const ChatBox = () => {
                       </picture>
                     </div>
                     <div>
-                      <Stack direction="row" spacing={2}>
+                      <Stack
+                        className="capter-stack"
+                        direction="row"
+                        spacing={2}>
                         <Button
                           color="error"
                           variant="outlined"
