@@ -268,3 +268,10 @@
   align-items: center;
   padding-top: 15px;
 }
+
+.css-1hdyuqk-MuiPaper-root-MuiAlert-root {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

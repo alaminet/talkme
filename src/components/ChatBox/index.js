@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./style.css";
-import { Grid, IconButton } from "@mui/material";
+import { Alert, Grid, IconButton } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -356,241 +356,245 @@ const ChatBox = () => {
   return (
     <>
       <ToastContainer />
-      <Grid
-        height="100vh"
-        p={3}
-        container
-        direction="column"
-        justifyContent="space-between"
-        alignItems="flex-start">
-        <Grid item className="chat-header">
-          <div className="chat-header-wrapper">
-            <div className="header_info">
-              <div className="head-picture">
-                {onlineUser.includes(activeSingleChat?.userID) && (
-                  <div className="status"></div>
-                )}
-
-                <div className="user_pic_70">
-                  <picture>
-                    <img
-                      src={activeSingleChat?.userPic ?? defaultProfile}
-                      alt={activeSingleChat?.username}
-                    />
-                  </picture>
-                </div>
-              </div>
-              <div className="user_info">
-                <div className="name">{activeSingleChat?.username}</div>
-                <div className="sub_name">
-                  {activeSingleChat?.status == "single"
-                    ? onlineUser.includes(activeSingleChat?.userID)
-                      ? "Online"
-                      : "Offline"
-                    : activeSingleChat?.status}
-                </div>
-              </div>
-            </div>
-            <div className="header_option">
-              <BsThreeDotsVertical />
-            </div>
-          </div>
-        </Grid>
-        <Grid item className="chat-body">
-          <div className="chat-body-wrapper">
-            {activeSingleChat?.status == "single"
-              ? textMsg?.map((item, i) => (
-                  <div key={i} ref={scrollMsg}>
-                    {item.chatSend == activeSingleChat?.userID ? (
-                      item?.msg ? (
-                        <>
-                          <div className="massage w-50 left">
-                            <div className="msg">
-                              <div className="text">{item?.msg}</div>
-                            </div>
-                            <div className="time">
-                              {moment(item?.time).fromNow()}
-                            </div>
-                          </div>
-                        </>
-                      ) : item?.picMsg ? (
-                        <div className="massage w-50 left">
-                          <div className="msg">
-                            <div className="picture">
-                              <picture>
-                                <ModalImage
-                                  small={item?.picMsg}
-                                  medium={item?.picMsg}
-                                  alt=""
-                                  showRotate="true"
-                                />
-                              </picture>
-                            </div>
-                          </div>
-                          <div className="time">
-                            {moment(item?.time).fromNow()}
-                          </div>
-                        </div>
-                      ) : item?.recMsg ? (
-                        <div className="massage w-50 left">
-                          <div className="msg">
-                            <div className="audio">
-                              <audio controls src={item?.recMsg}></audio>
-                            </div>
-                          </div>
-                          <div className="time">
-                            {moment(item?.time).fromNow()}
-                          </div>
-                        </div>
-                      ) : (
-                        "VedoMsg"
-                      )
-                    ) : item?.msg ? (
-                      <>
-                        <div className="massage w-50 right">
-                          <div className="msg">
-                            <div className="text">{item?.msg}</div>
-                          </div>
-                          <div className="time">
-                            {moment(item?.time).fromNow()}
-                          </div>
-                        </div>
-                      </>
-                    ) : item?.picMsg ? (
-                      <div className="massage w-50 right">
-                        <div className="msg">
-                          <div className="picture">
-                            <picture>
-                              <ModalImage
-                                small={item?.picMsg}
-                                medium={item?.picMsg}
-                                alt=""
-                                showRotate="true"
-                              />
-                            </picture>
-                          </div>
-                        </div>
-                        <div className="time">
-                          {moment(item?.time).fromNow()}
-                        </div>
-                      </div>
-                    ) : item?.recMsg ? (
-                      <div className="massage w-50 right">
-                        <div className="msg">
-                          <div className="audio">
-                            <audio controls src={item?.recMsg}></audio>
-                          </div>
-                        </div>
-                        <div className="time">
-                          {moment(item?.time).fromNow()}
-                        </div>
-                      </div>
-                    ) : (
-                      "videoMsg"
+      {activeSingleChat === null ? (
+        <Alert severity="error">No chat slected..!</Alert>
+      ) : (
+        <>
+          <Grid
+            height="100vh"
+            p={3}
+            container
+            direction="column"
+            justifyContent="space-between"
+            alignItems="flex-start">
+            <Grid item className="chat-header">
+              <div className="chat-header-wrapper">
+                <div className="header_info">
+                  <div className="head-picture">
+                    {onlineUser.includes(activeSingleChat?.userID) && (
+                      <div className="status"></div>
                     )}
+
+                    <div className="user_pic_70">
+                      <picture>
+                        <img
+                          src={activeSingleChat?.userPic ?? defaultProfile}
+                          alt={activeSingleChat?.username}
+                        />
+                      </picture>
+                    </div>
                   </div>
-                ))
-              : activeSingleChat?.status == "group"
-              ? grpMsg?.map((item, i) => (
-                  <div key={i} ref={scrollMsg}>
-                    {item.chatSend == users?.uid ? (
-                      item?.msg ? (
-                        <>
+                  <div className="user_info">
+                    <div className="name">{activeSingleChat?.username}</div>
+                    <div className="sub_name">
+                      {activeSingleChat?.status == "single"
+                        ? onlineUser.includes(activeSingleChat?.userID)
+                          ? "Online"
+                          : "Offline"
+                        : activeSingleChat?.status}
+                    </div>
+                  </div>
+                </div>
+                <div className="header_option">
+                  <BsThreeDotsVertical />
+                </div>
+              </div>
+            </Grid>
+            <Grid item className="chat-body">
+              <div className="chat-body-wrapper">
+                {activeSingleChat?.status == "single"
+                  ? textMsg?.map((item, i) => (
+                      <div key={i} ref={scrollMsg}>
+                        {item.chatSend == activeSingleChat?.userID ? (
+                          item?.msg ? (
+                            <>
+                              <div className="massage w-50 left">
+                                <div className="msg">
+                                  <div className="text">{item?.msg}</div>
+                                </div>
+                                <div className="time">
+                                  {moment(item?.time).fromNow()}
+                                </div>
+                              </div>
+                            </>
+                          ) : item?.picMsg ? (
+                            <div className="massage w-50 left">
+                              <div className="msg">
+                                <div className="picture">
+                                  <picture>
+                                    <ModalImage
+                                      small={item?.picMsg}
+                                      medium={item?.picMsg}
+                                      alt=""
+                                      showRotate="true"
+                                    />
+                                  </picture>
+                                </div>
+                              </div>
+                              <div className="time">
+                                {moment(item?.time).fromNow()}
+                              </div>
+                            </div>
+                          ) : item?.recMsg ? (
+                            <div className="massage w-50 left">
+                              <div className="msg">
+                                <div className="audio">
+                                  <audio controls src={item?.recMsg}></audio>
+                                </div>
+                              </div>
+                              <div className="time">
+                                {moment(item?.time).fromNow()}
+                              </div>
+                            </div>
+                          ) : (
+                            "VedoMsg"
+                          )
+                        ) : item?.msg ? (
+                          <>
+                            <div className="massage w-50 right">
+                              <div className="msg">
+                                <div className="text">{item?.msg}</div>
+                              </div>
+                              <div className="time">
+                                {moment(item?.time).fromNow()}
+                              </div>
+                            </div>
+                          </>
+                        ) : item?.picMsg ? (
                           <div className="massage w-50 right">
                             <div className="msg">
-                              <div className="text">{item?.msg}</div>
+                              <div className="picture">
+                                <picture>
+                                  <ModalImage
+                                    small={item?.picMsg}
+                                    medium={item?.picMsg}
+                                    alt=""
+                                    showRotate="true"
+                                  />
+                                </picture>
+                              </div>
                             </div>
                             <div className="time">
                               {moment(item?.time).fromNow()}
                             </div>
                           </div>
-                        </>
-                      ) : item?.picMsg ? (
-                        <div className="massage w-50 right">
-                          <div className="msg">
-                            <div className="picture">
-                              <picture>
-                                <ModalImage
-                                  small={item?.picMsg}
-                                  medium={item?.picMsg}
-                                  alt=""
-                                  showRotate="true"
-                                />
-                              </picture>
+                        ) : item?.recMsg ? (
+                          <div className="massage w-50 right">
+                            <div className="msg">
+                              <div className="audio">
+                                <audio controls src={item?.recMsg}></audio>
+                              </div>
+                            </div>
+                            <div className="time">
+                              {moment(item?.time).fromNow()}
                             </div>
                           </div>
-                          <div className="time">
-                            {moment(item?.time).fromNow()}
-                          </div>
-                        </div>
-                      ) : item?.recMsg ? (
-                        <div className="massage w-50 right">
-                          <div className="msg">
-                            <div className="audio">
-                              <audio controls src={item?.recMsg}></audio>
+                        ) : (
+                          "videoMsg"
+                        )}
+                      </div>
+                    ))
+                  : activeSingleChat?.status == "group"
+                  ? grpMsg?.map((item, i) => (
+                      <div key={i} ref={scrollMsg}>
+                        {item.chatSend == users?.uid ? (
+                          item?.msg ? (
+                            <>
+                              <div className="massage w-50 right">
+                                <div className="msg">
+                                  <div className="text">{item?.msg}</div>
+                                </div>
+                                <div className="time">
+                                  {moment(item?.time).fromNow()}
+                                </div>
+                              </div>
+                            </>
+                          ) : item?.picMsg ? (
+                            <div className="massage w-50 right">
+                              <div className="msg">
+                                <div className="picture">
+                                  <picture>
+                                    <ModalImage
+                                      small={item?.picMsg}
+                                      medium={item?.picMsg}
+                                      alt=""
+                                      showRotate="true"
+                                    />
+                                  </picture>
+                                </div>
+                              </div>
+                              <div className="time">
+                                {moment(item?.time).fromNow()}
+                              </div>
+                            </div>
+                          ) : item?.recMsg ? (
+                            <div className="massage w-50 right">
+                              <div className="msg">
+                                <div className="audio">
+                                  <audio controls src={item?.recMsg}></audio>
+                                </div>
+                              </div>
+                              <div className="time">
+                                {moment(item?.time).fromNow()}
+                              </div>
+                            </div>
+                          ) : (
+                            "VedoMsg"
+                          )
+                        ) : item?.msg ? (
+                          <>
+                            <div className="massage w-50 left">
+                              <div className="msg">
+                                <div className="text">{item?.msg}</div>
+                              </div>
+                              <div className="time">
+                                {moment(item?.time).fromNow() +
+                                  " by " +
+                                  item?.username}
+                              </div>
+                            </div>
+                          </>
+                        ) : item?.picMsg ? (
+                          <div className="massage w-50 left">
+                            <div className="msg">
+                              <div className="picture">
+                                <picture>
+                                  <ModalImage
+                                    small={item?.picMsg}
+                                    medium={item?.picMsg}
+                                    alt=""
+                                    showRotate="true"
+                                  />
+                                </picture>
+                              </div>
+                            </div>
+                            <div className="time">
+                              {moment(item?.time).fromNow() +
+                                " by " +
+                                item?.username}
                             </div>
                           </div>
-                          <div className="time">
-                            {moment(item?.time).fromNow()}
+                        ) : item?.recMsg ? (
+                          <div className="massage w-50 left">
+                            <div className="msg">
+                              <div className="audio">
+                                <audio controls src={item?.recMsg}></audio>
+                              </div>
+                            </div>
+                            <div className="time">
+                              {moment(item?.time).fromNow() +
+                                " by " +
+                                item?.username}
+                            </div>
                           </div>
-                        </div>
-                      ) : (
-                        "VedoMsg"
-                      )
-                    ) : item?.msg ? (
-                      <>
-                        <div className="massage w-50 left">
-                          <div className="msg">
-                            <div className="text">{item?.msg}</div>
-                          </div>
-                          <div className="time">
-                            {moment(item?.time).fromNow() +
-                              " by " +
-                              item?.username}
-                          </div>
-                        </div>
-                      </>
-                    ) : item?.picMsg ? (
-                      <div className="massage w-50 left">
-                        <div className="msg">
-                          <div className="picture">
-                            <picture>
-                              <ModalImage
-                                small={item?.picMsg}
-                                medium={item?.picMsg}
-                                alt=""
-                                showRotate="true"
-                              />
-                            </picture>
-                          </div>
-                        </div>
-                        <div className="time">
-                          {moment(item?.time).fromNow() +
-                            " by " +
-                            item?.username}
-                        </div>
+                        ) : (
+                          "videoMsg"
+                        )}
                       </div>
-                    ) : item?.recMsg ? (
-                      <div className="massage w-50 left">
-                        <div className="msg">
-                          <div className="audio">
-                            <audio controls src={item?.recMsg}></audio>
-                          </div>
-                        </div>
-                        <div className="time">
-                          {moment(item?.time).fromNow() +
-                            " by " +
-                            item?.username}
-                        </div>
-                      </div>
-                    ) : (
-                      "videoMsg"
-                    )}
-                  </div>
-                ))
-              : "Empty msg"}
-            {/* text message */}
-            {/* <div className="massage w-50 left">
+                    ))
+                  : "Empty msg"}
+                {/* text message */}
+                {/* <div className="massage w-50 left">
               <div className="msg">
                 <div className="text">Lorem Ipsum</div>
               </div>
@@ -602,8 +606,8 @@ const ChatBox = () => {
               </div>
               <div className="time">today</div>
             </div> */}
-            {/* picture massage */}
-            {/* <div className="massage w-50 left">
+                {/* picture massage */}
+                {/* <div className="massage w-50 left">
               <div className="msg">
                 <div className="picture">
                   <picture>
@@ -633,8 +637,8 @@ const ChatBox = () => {
               </div>
               <div className="time">today</div>
             </div> */}
-            {/* Video massage */}
-            {/* <div className="massage w-50 left">
+                {/* Video massage */}
+                {/* <div className="massage w-50 left">
               <div className="msg">
                 <div className="video">
                   <video
@@ -670,8 +674,8 @@ const ChatBox = () => {
               </div>
               <div className="time">today</div>
             </div> */}
-            {/* Audio Message */}
-            {/* <div className="massage w-50 left">
+                {/* Audio Message */}
+                {/* <div className="massage w-50 left">
               <div className="msg">
                 <div className="audio">
                   <audio
@@ -697,110 +701,112 @@ const ChatBox = () => {
               </div>
               <div className="time">today</div>
             </div> */}
-          </div>
-        </Grid>
-        <Grid item className="chat-input">
-          <div className="input-wrapper">
-            <div className="input-form">
-              <div className="input-field">
-                {activeSingleChat?.status == "single" ? (
-                  <input
-                    type="text"
-                    placeholder="messages"
-                    value={msgSend}
-                    onKeyUp={handleEnterPress}
-                    onChange={(e) => setMsgSend(e.target.value)}
-                  />
-                ) : (
-                  <input
-                    type="text"
-                    placeholder="messages"
-                    value={grpmsgSend}
-                    onKeyUp={handleEnterPress}
-                    onChange={(e) => setGrpMsgSend(e.target.value)}
-                  />
-                )}
+              </div>
+            </Grid>
+            <Grid item className="chat-input">
+              <div className="input-wrapper">
+                <div className="input-form">
+                  <div className="input-field">
+                    {activeSingleChat?.status == "single" ? (
+                      <input
+                        type="text"
+                        placeholder="messages"
+                        value={msgSend}
+                        onKeyUp={handleEnterPress}
+                        onChange={(e) => setMsgSend(e.target.value)}
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        placeholder="messages"
+                        value={grpmsgSend}
+                        onKeyUp={handleEnterPress}
+                        onChange={(e) => setGrpMsgSend(e.target.value)}
+                      />
+                    )}
 
-                {audioRec && (
-                  <AudioRecorder
-                    onRecordingComplete={addAudioElement}
-                    audioTrackConstraints={{
-                      noiseSuppression: true,
-                      echoCancellation: true,
-                    }}
-                    showVisualizer={true}
-                    downloadFileExtension="mp3"
-                  />
-                )}
-              </div>
-              <div className="input-btn">
-                <IconButton
-                  onClick={audioUrl ? handleAudioUpload : handleSubmit}>
-                  <IoMdSend />
-                </IconButton>
-              </div>
-            </div>
-            <div className="input-opt">
-              <SpeedDial
-                ariaLabel="SpeedDial basic example"
-                sx={{ position: "absolute", bottom: 16, right: 16 }}
-                icon={<SpeedDialIcon />}>
-                {speedIcon.map((action, j) => (
-                  <SpeedDialAction
-                    key={j}
-                    icon={action.icon}
-                    tooltipTitle={action.name}
-                  />
-                ))}
-              </SpeedDial>
-            </div>
-          </div>
-          {camOpen && (
-            <div className="camera-opt">
-              <div className="camera-wrapper">
-                <div className="closed">
-                  <IoCloseSharp onClick={() => setCamOpen(false)} />
+                    {audioRec && (
+                      <AudioRecorder
+                        onRecordingComplete={addAudioElement}
+                        audioTrackConstraints={{
+                          noiseSuppression: true,
+                          echoCancellation: true,
+                        }}
+                        showVisualizer={true}
+                        downloadFileExtension="mp3"
+                      />
+                    )}
+                  </div>
+                  <div className="input-btn">
+                    <IconButton
+                      onClick={audioUrl ? handleAudioUpload : handleSubmit}>
+                      <IoMdSend />
+                    </IconButton>
+                  </div>
                 </div>
-                <Camera
-                  onTakePhoto={(dataUri) => {
-                    handleTakePhoto(dataUri);
-                  }}
-                  isImageMirror={true}
-                />
+                <div className="input-opt">
+                  <SpeedDial
+                    ariaLabel="SpeedDial basic example"
+                    sx={{ position: "absolute", bottom: 16, right: 16 }}
+                    icon={<SpeedDialIcon />}>
+                    {speedIcon.map((action, j) => (
+                      <SpeedDialAction
+                        key={j}
+                        icon={action.icon}
+                        tooltipTitle={action.name}
+                      />
+                    ))}
+                  </SpeedDial>
+                </div>
               </div>
-            </div>
-          )}
-          {/* Modal for Capter image by webcam */}
-          {capter && (
-            <Modal open={modalOpen} onClose={() => SetModalOpen(false)}>
-              <Box className="box-modal">
-                <div className="capter-img">
-                  <picture>
-                    <img src={capter} alt="" />
-                  </picture>
+              {camOpen && (
+                <div className="camera-opt">
+                  <div className="camera-wrapper">
+                    <div className="closed">
+                      <IoCloseSharp onClick={() => setCamOpen(false)} />
+                    </div>
+                    <Camera
+                      onTakePhoto={(dataUri) => {
+                        handleTakePhoto(dataUri);
+                      }}
+                      isImageMirror={true}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <Stack direction="row" spacing={2}>
-                    <Button
-                      color="error"
-                      variant="outlined"
-                      onClick={() => SetModalOpen(false)}
-                      startIcon={<MdDeleteForever />}>
-                      Delete
-                    </Button>
-                    <Button
-                      variant="contained"
-                      onClick={handleCaptureSend}
-                      endIcon={<MdSend />}>
-                      Send
-                    </Button>
-                  </Stack>
-                </div>
-              </Box>
-            </Modal>
-          )}
-        </Grid>
-      </Grid>
+              )}
+              {/* Modal for Capter image by webcam */}
+              {capter && (
+                <Modal open={modalOpen} onClose={() => SetModalOpen(false)}>
+                  <Box className="box-modal">
+                    <div className="capter-img">
+                      <picture>
+                        <img src={capter} alt="" />
+                      </picture>
+                    </div>
+                    <div>
+                      <Stack direction="row" spacing={2}>
+                        <Button
+                          color="error"
+                          variant="outlined"
+                          onClick={() => SetModalOpen(false)}
+                          startIcon={<MdDeleteForever />}>
+                          Delete
+                        </Button>
+                        <Button
+                          variant="contained"
+                          onClick={handleCaptureSend}
+                          endIcon={<MdSend />}>
+                          Send
+                        </Button>
+                      </Stack>
+                    </div>
+                  </Box>
+                </Modal>
+              )}
+            </Grid>
+          </Grid>
+        </>
+      )}
     </>
   );
 };

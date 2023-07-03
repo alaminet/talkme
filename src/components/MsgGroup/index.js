@@ -75,14 +75,28 @@ const MsgGroup = () => {
           memberlist.includes(item.key) ||
           item.val().groupAdmin === users.uid
         ) {
-          grpArr.push({
-            ...item.val(),
-            grpID: item.key,
-            adminName: user?.username,
-          });
+          getDownloadURL(storageRef(storage, "GroupPic/" + item.key))
+            .then((downloadURL) => {
+              grpArr.push({
+                ...item.val(),
+                grpID: item.key,
+                grpPic: downloadURL,
+                adminName: user?.username,
+              });
+            })
+            .catch((error) => {
+              grpArr.push({
+                ...item.val(),
+                grpID: item.key,
+                grpPic: null,
+                adminName: user?.username,
+              });
+            })
+            .then(() => {
+              setGrouplist([...grpArr]);
+            });
         }
       });
-      setGrouplist(grpArr);
     });
   }, [userlist, memberlist]);
 
@@ -93,7 +107,7 @@ const MsgGroup = () => {
         status: "group",
         userID: item.grpID,
         username: item.groupName,
-        userPic: null,
+        userPic: item?.grpPic,
       })
     );
   };
@@ -122,8 +136,8 @@ const MsgGroup = () => {
               <div className="user_pic_70">
                 <picture>
                   <img
-                    src={item.userPic ?? defaultProfile}
-                    alt={item.groupName}
+                    src={item?.grpPic ?? defaultProfile}
+                    alt={item?.groupName}
                   />
                 </picture>
               </div>
