@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./style.css";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { FaCloudUploadAlt } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import { HiBackspace } from "react-icons/hi2";
 import Alert from "@mui/material/Alert";
@@ -21,6 +22,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { Badge } from "@mui/material";
+import Grouppicmodal from "../Modals/Grouppicmodal";
 
 const Groups = () => {
   const db = getDatabase();
@@ -35,6 +37,14 @@ const Groups = () => {
   const [showmember, setShowmember] = useState(false);
   const users = useSelector((user) => user.loginSlice.login);
   const defaultProfile = "./images/avatar_boy_cap.png";
+
+  // GroupPicModal
+  const [open, setOpen] = useState(false);
+  const [selectGrp, setSelectGrp] = useState([]);
+  const handleOpen = (item) => {
+    setOpen(true);
+    setSelectGrp(item);
+  };
 
   // user list from firebase
   useEffect(() => {
@@ -80,15 +90,30 @@ const Groups = () => {
           if (item.key === request?.grpID) {
             reqArr.push({ ...request });
           }
-          grpArr.push({
-            ...item.val(),
-            grpID: item.key,
-            adminName: user?.username,
-            grpReq: reqArr?.length,
-          });
+          getDownloadURL(storageRef(storage, "GroupPic/" + item.key))
+            .then((downloadURL) => {
+              grpArr.push({
+                ...item.val(),
+                grpID: item.key,
+                adminName: user?.username,
+                grpReq: reqArr?.length,
+                grpPic: downloadURL,
+              });
+            })
+            .catch((error) => {
+              grpArr.push({
+                ...item.val(),
+                grpID: item.key,
+                adminName: user?.username,
+                grpReq: reqArr?.length,
+                grpPic: null,
+              });
+            })
+            .then(() => {
+              setGrouplist([...grpArr]);
+            });
         }
       });
-      setGrouplist(grpArr);
     });
   }, [userlist]);
 
@@ -318,17 +343,25 @@ const Groups = () => {
           ) : (
             grouplist.map((item, i) => (
               <div key={i} className="body_list">
-                <div className="user_pic_70">
+                <div
+                  className="user_pic_70 group-pic"
+                  onClick={() => handleOpen(item)}>
                   <picture>
-                    <img src="./images/avatar_boy_cap.png" alt="user pic" />
+                    <img
+                      src={item?.grpPic ?? defaultProfile}
+                      alt={item?.groupName}
+                    />
                   </picture>
+                  <div className="profile_overlay">
+                    <FaCloudUploadAlt />
+                  </div>
                 </div>
                 <div className="user_info">
-                  <div className="name">{item.groupName}</div>
-                  <div className="sub_name">{item.groupTag}</div>
+                  <div className="name">{item?.groupName}</div>
+                  <div className="sub_name">{item?.groupTag}</div>
                 </div>
                 <div className="btn_group">
-                  <Badge badgeContent={item.grpReq} max={9}>
+                  <Badge badgeContent={item?.grpReq} max={9}>
                     <Button
                       className="primary_btn unfriend"
                       variant="contained"
@@ -350,6 +383,7 @@ const Groups = () => {
           )}
         </div>
       </div>
+      <Grouppicmodal open={open} setOpen={setOpen} selectGrp={selectGrp} />
     </>
   );
 };

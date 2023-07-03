@@ -50,3 +50,32 @@
   height: 30px;
   fill: var(--color-primary);
 }
+
+.group-pic {
+  position: relative;
+}
+
+.profile_overlay {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  cursor: pointer;
+  background-color: var(--color-black);
+  opacity: 0;
+  transition: all 0.3s linear;
+}
+
+.profile_overlay svg {
+  width: 30px;
+  height: 30px;
+  fill: var(--color-white);
+}
+
+.group-pic:hover .profile_overlay {
+  opacity: 0.6;
+}

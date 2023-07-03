@@ -63,15 +63,31 @@ const GroupRequest = () => {
         let memberreq = grpreq.find(
           (r) => r?.requester === users.uid && r?.grpID === item.key
         );
-        grpArr.push({
-          ...item.val(),
-          grpID: item.key,
-          adminName: user?.username,
-          requester: memberreq?.requester,
-          reqID: memberreq?.reqID,
-        });
+        getDownloadURL(storageRef(storage, "GroupPic/" + item.key))
+          .then((downloadURL) => {
+            grpArr.push({
+              ...item.val(),
+              grpID: item.key,
+              grpPic: downloadURL,
+              adminName: user?.username,
+              requester: memberreq?.requester,
+              reqID: memberreq?.reqID,
+            });
+          })
+          .catch((error) => {
+            grpArr.push({
+              ...item.val(),
+              grpID: item.key,
+              grpPic: null,
+              adminName: user?.username,
+              requester: memberreq?.requester,
+              reqID: memberreq?.reqID,
+            });
+          })
+          .then(() => {
+            setGrouplist([...grpArr]);
+          });
       });
-      setGrouplist(grpArr);
     });
   }, [userlist]);
 
@@ -135,8 +151,8 @@ const GroupRequest = () => {
               <div className="user_pic_70">
                 <picture>
                   <img
-                    src={item.userPic ?? defaultProfile}
-                    alt={item.groupName}
+                    src={item?.grpPic ?? defaultProfile}
+                    alt={item?.groupName}
                   />
                 </picture>
               </div>
