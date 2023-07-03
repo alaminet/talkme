@@ -5,7 +5,7 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import { ToastContainer, toast } from "react-toastify";
+
 import { BsThreeDotsVertical, BsCamera } from "react-icons/bs";
 import { IoMdSend } from "react-icons/io";
 import { MdSend } from "react-icons/md";
@@ -26,7 +26,6 @@ import {
   getStorage,
   ref as storageRef,
   uploadBytes,
-  uploadBytesResumable,
   uploadString,
 } from "firebase/storage";
 import moment from "moment/moment";
@@ -355,7 +354,6 @@ const ChatBox = () => {
 
   return (
     <>
-      <ToastContainer />
       {activeSingleChat === null ? (
         <Alert severity="error">No chat slected..!</Alert>
       ) : (
