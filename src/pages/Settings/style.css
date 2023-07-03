@@ -22,6 +22,11 @@
   overflow: hidden;
   background-color: var(--color-optional-one);
   position: relative;
+  margin: 10px auto;
+}
+
+.css-g1sfbl {
+  padding: 15px;
 }
 
 .profile-pic img {

@@ -143,7 +143,7 @@ const Settings = () => {
                     : null
                 }
               />
-              <Button variant="contained" type="submit">
+              <Button fullWidth variant="contained" type="submit">
                 Submit
               </Button>
             </form>
